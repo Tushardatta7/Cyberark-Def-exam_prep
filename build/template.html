@@ -1,0 +1,510 @@
+<title>PAM-DEF Question Bank</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Serif:ital,wght@0,400;0,500;0,600;1,400&display=swap">
+
+<style>
+:root{
+  --ground:#F2F4F7; --surface:#FFFFFF; --surface-2:#F7F8FB;
+  --ink:#111827; --ink-2:#3D4757; --muted:#6B7686; --line:#DCE1E9; --line-2:#EAEDF3;
+  --accent:#A85E10; --accent-soft:#F6EADA; --accent-line:#D9B784;
+  --mast:#16233A; --btn-bg:#16233A; --btn-fg:#F2F5FA;
+  --ok:#136D53; --ok-soft:#E2F1EB; --ok-line:#9CCFBE;
+  --no:#A6332C; --no-soft:#F8E6E4; --no-line:#E0A7A2;
+  --shadow:0 1px 2px rgba(17,24,39,.06), 0 8px 24px -12px rgba(17,24,39,.18);
+  --r:10px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ground:#0C1119; --surface:#141C29; --surface-2:#1A2331;
+    --ink:#E8ECF3; --ink-2:#C2CAD8; --muted:#8E9AAE; --line:#27334A; --line-2:#1E2837;
+    --accent:#E0A153; --accent-soft:#2A2113; --accent-line:#6B5327;
+    --mast:#121C2C; --btn-bg:#E0A153; --btn-fg:#151A22;
+    --ok:#5CC3A2; --ok-soft:#122A24; --ok-line:#2C5F4F;
+    --no:#EF8A81; --no-soft:#2C1715; --no-line:#6B3833;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.6);
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0C1119; --surface:#141C29; --surface-2:#1A2331;
+  --ink:#E8ECF3; --ink-2:#C2CAD8; --muted:#8E9AAE; --line:#27334A; --line-2:#1E2837;
+  --accent:#E0A153; --accent-soft:#2A2113; --accent-line:#6B5327;
+  --mast:#121C2C; --btn-bg:#E0A153; --btn-fg:#151A22;
+  --ok:#5CC3A2; --ok-soft:#122A24; --ok-line:#2C5F4F;
+  --no:#EF8A81; --no-soft:#2C1715; --no-line:#6B3833;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.6);
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--ground); color:var(--ink);
+  font-family:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  font-size:16px; line-height:1.55; -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:820px;margin:0 auto;padding:0 20px 96px}
+.mono{font-family:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace}
+code{font-family:"IBM Plex Mono",ui-monospace,Menlo,monospace;font-size:.88em;
+  background:var(--surface-2);border:1px solid var(--line-2);border-radius:4px;padding:.08em .34em}
+h1,h2,h3{text-wrap:balance;margin:0}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+
+/* ---------- masthead ---------- */
+.mast{background:var(--mast);color:#EAEEF6;padding:34px 0 30px;margin-bottom:26px;
+  border-bottom:1px solid rgba(255,255,255,.08)}
+.mast .wrap{padding-bottom:0}
+.eyebrow{font-family:"IBM Plex Mono",monospace;font-size:11.5px;letter-spacing:.16em;
+  text-transform:uppercase;color:#C9A063}
+.mast h1{font-family:"IBM Plex Serif",Georgia,serif;font-size:clamp(26px,4.6vw,38px);
+  font-weight:600;letter-spacing:-.015em;margin:8px 0 6px;color:#F3F6FB}
+.mast p{margin:0;color:#9FADC4;font-size:14.5px;max-width:60ch}
+.mast .countdown{margin-top:14px;display:inline-flex;align-items:center;gap:8px;
+  font-family:"IBM Plex Mono",monospace;font-size:12px;letter-spacing:.04em;
+  background:rgba(224,161,83,.12);border:1px solid rgba(224,161,83,.3);
+  color:#E7B87A;padding:5px 11px;border-radius:999px}
+
+/* ---------- cards ---------- */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);
+  box-shadow:var(--shadow)}
+.pad{padding:26px}
+
+/* ---------- setup screen ---------- */
+.setup{display:flex;flex-direction:column;gap:22px}
+.setup h2{font-family:"IBM Plex Serif",Georgia,serif;font-size:19px;font-weight:600;margin-bottom:4px}
+.sub{color:var(--muted);font-size:13.5px;margin:0 0 16px}
+.modes{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:620px){.modes{grid-template-columns:1fr}}
+.mode{display:block;text-align:left;background:var(--surface-2);border:1px solid var(--line);
+  border-radius:8px;padding:15px 16px;transition:border-color .15s,background .15s}
+.mode:hover{border-color:var(--accent-line)}
+.mode[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent-line)}
+.mode strong{display:block;font-size:15px;margin-bottom:3px}
+.mode span{display:block;color:var(--muted);font-size:12.5px;line-height:1.45}
+.domlist{display:flex;flex-direction:column;gap:2px;margin-top:6px}
+.dom{display:flex;align-items:center;gap:11px;padding:8px 10px;border-radius:6px;
+  background:none;border:1px solid transparent;width:100%;text-align:left;transition:background .12s}
+.dom:hover{background:var(--surface-2)}
+.dom .box{width:16px;height:16px;flex:0 0 16px;border:1.5px solid var(--line);border-radius:4px;
+  display:grid;place-items:center;background:var(--surface)}
+.dom[aria-pressed="true"] .box{background:var(--accent);border-color:var(--accent)}
+.dom[aria-pressed="true"] .box::after{content:"";width:8px;height:5px;border-left:2px solid var(--surface);
+  border-bottom:2px solid var(--surface);transform:rotate(-45deg) translateY(-1px)}
+.dom .nm{flex:1;font-size:14px}
+.dom .ct{font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--muted);
+  font-variant-numeric:tabular-nums}
+.rowbtns{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:4px}
+.btn{background:var(--btn-bg);color:var(--btn-fg);border:1px solid var(--btn-bg);border-radius:7px;
+  padding:11px 20px;font-size:14.5px;font-weight:600;transition:opacity .15s}
+.btn:hover{opacity:.88}
+.btn.ghost{background:none;color:var(--ink-2);border-color:var(--line);font-weight:500}
+.btn.ghost:hover{border-color:var(--accent-line);opacity:1}
+.btn[disabled]{opacity:.4;cursor:not-allowed}
+.tiny{font-size:12px;color:var(--muted)}
+.linkish{background:none;border:0;padding:0;color:var(--accent);font-size:12.5px;
+  text-decoration:underline;text-underline-offset:3px}
+
+/* ---------- progress rail: 7 segments = 7 exam domains ---------- */
+.rail{display:flex;gap:3px;margin-bottom:18px}
+.rail .seg{flex:1 1 auto;height:5px;background:var(--line);border-radius:2px;overflow:hidden;position:relative}
+.rail .seg i{position:absolute;inset:0 auto 0 0;width:0;background:var(--accent);
+  transition:width .25s ease;display:block}
+.railkey{display:flex;justify-content:space-between;font-family:"IBM Plex Mono",monospace;
+  font-size:11px;color:var(--muted);margin:-12px 0 20px}
+
+/* ---------- question ---------- */
+.qmeta{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+.tag{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.07em;
+  text-transform:uppercase;color:var(--accent);background:var(--accent-soft);
+  border:1px solid var(--accent-line);border-radius:999px;padding:3px 10px}
+.qnum{font-family:"IBM Plex Mono",monospace;font-size:12.5px;color:var(--muted);
+  font-variant-numeric:tabular-nums;margin-left:auto}
+.stem{font-family:"IBM Plex Serif",Georgia,serif;font-size:18px;line-height:1.5;
+  font-weight:500;letter-spacing:-.006em;margin:0 0 20px}
+.opts{display:flex;flex-direction:column;gap:9px}
+.opt{display:flex;gap:13px;align-items:flex-start;text-align:left;width:100%;
+  background:var(--surface-2);border:1px solid var(--line);border-radius:8px;padding:13px 15px;
+  transition:border-color .13s,background .13s}
+.opt:hover:not([disabled]){border-color:var(--accent-line)}
+.opt .key{font-family:"IBM Plex Mono",monospace;font-size:12.5px;font-weight:600;
+  width:22px;height:22px;flex:0 0 22px;border-radius:5px;display:grid;place-items:center;
+  background:var(--surface);border:1px solid var(--line);color:var(--muted)}
+.opt .txt{flex:1;font-size:14.6px;line-height:1.5}
+.opt[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent-line)}
+.opt[aria-pressed="true"] .key{background:var(--accent);border-color:var(--accent);color:#fff}
+.opt[disabled]{cursor:default}
+.opt.correct{background:var(--ok-soft);border-color:var(--ok-line)}
+.opt.correct .key{background:var(--ok);border-color:var(--ok);color:#fff}
+.opt.wrongpick{background:var(--no-soft);border-color:var(--no-line)}
+.opt.wrongpick .key{background:var(--no);border-color:var(--no);color:#fff}
+.opt .mark{font-family:"IBM Plex Mono",monospace;font-size:11px;font-weight:600;
+  letter-spacing:.06em;text-transform:uppercase;align-self:center}
+.opt.correct .mark{color:var(--ok)}
+.opt.wrongpick .mark{color:var(--no)}
+
+/* ---------- explanation ---------- */
+.expl{margin-top:18px;border-top:1px solid var(--line-2);padding-top:18px;
+  display:flex;flex-direction:column;gap:14px}
+.verdict{font-family:"IBM Plex Mono",monospace;font-size:12px;font-weight:600;
+  letter-spacing:.09em;text-transform:uppercase}
+.verdict.y{color:var(--ok)} .verdict.n{color:var(--no)}
+.expl h4{margin:0 0 5px;font-family:"IBM Plex Mono",monospace;font-size:11px;font-weight:600;
+  letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.expl p{margin:0;font-family:"IBM Plex Serif",Georgia,serif;font-size:15px;line-height:1.62;color:var(--ink-2)}
+.srcline{font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:var(--muted);
+  border-left:2px solid var(--accent-line);padding-left:10px}
+
+/* ---------- nav bar ---------- */
+.navbar{position:sticky;bottom:0;background:var(--surface);border-top:1px solid var(--line);
+  margin:0 -20px;padding:12px 20px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.navbar .spacer{flex:1}
+.score{font-family:"IBM Plex Mono",monospace;font-size:12.5px;color:var(--muted);
+  font-variant-numeric:tabular-nums}
+.timer{font-family:"IBM Plex Mono",monospace;font-size:13px;font-variant-numeric:tabular-nums;
+  color:var(--ink-2);background:var(--surface-2);border:1px solid var(--line);
+  border-radius:6px;padding:5px 10px}
+.timer.low{color:var(--no);border-color:var(--no-line);background:var(--no-soft)}
+
+/* ---------- results ---------- */
+.big{font-family:"IBM Plex Serif",Georgia,serif;font-size:52px;font-weight:600;
+  line-height:1;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.verdictbox{display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;margin-bottom:6px}
+.bars{display:flex;flex-direction:column;gap:11px;margin-top:20px}
+.bar{display:grid;grid-template-columns:1fr auto;gap:4px 12px;align-items:center}
+.bar .lbl{font-size:13.5px}
+.bar .val{font-family:"IBM Plex Mono",monospace;font-size:12.5px;color:var(--muted);
+  font-variant-numeric:tabular-nums}
+.bar .track{grid-column:1/-1;height:6px;background:var(--line);border-radius:3px;overflow:hidden}
+.bar .track i{display:block;height:100%;background:var(--accent);border-radius:3px}
+.bar.weak .track i{background:var(--no)}
+.bar.strong .track i{background:var(--ok)}
+.hr{height:1px;background:var(--line-2);margin:24px 0}
+.foot{margin-top:26px;font-size:12.5px;color:var(--muted);line-height:1.6}
+.foot a{color:var(--accent)}
+.review-item{border-top:1px solid var(--line-2);padding-top:18px;margin-top:18px}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<header class="mast">
+  <div class="wrap">
+    <div class="eyebrow">CyberArk Defender &mdash; PAM</div>
+    <h1>PAM-DEF Question Bank</h1>
+    <p>277 original questions across the seven official exam domains, each answer checked against current CyberArk documentation. No overlap with the earlier 100-question bank in your project.</p>
+    <div class="countdown mono" id="countdown"></div>
+  </div>
+</header>
+
+<div class="wrap">
+  <div id="app"></div>
+  <p class="foot">
+    Written from CyberArk's official documentation and the Defender-PAM Study Guide &mdash; not from exam dumps.
+    Where current docs contradict the v12.6 course material, the explanation says so.
+    Questions 1&ndash;125 and 193&ndash;200 were re-checked against docs.cyberark.com in August 2026. Questions 126&ndash;192 come from the
+    verified project knowledge base, and 201&ndash;277 were written from a gap analysis of sample-question screenshots &mdash; topics only,
+    with every answer reasoned from official documentation rather than copied. Treat parameter defaults in those ranges as
+    lab-checkable rather than settled, and verify anything you intend to memorise.
+  </p>
+</div>
+
+<script>
+const Q = __DATA__;
+const DOMAINS = {
+  1:"Onboard Accounts", 2:"Manage the Application", 3:"Maintenance & Troubleshooting",
+  4:"Configure & Manage Passwords", 5:"Security & Audit Functions",
+  6:"Session Management", 7:"User Management & Vendor PAM"
+};
+const KEYS = ["A","B","C","D","E"];
+const STORE = "pamdef-set2-v1";
+const EXAM_DATE = new Date("2026-09-04T09:00:00+06:00");
+
+let S = { screen:"setup", mode:"practice", doms:[1,2,3,4,5,6,7], order:[], i:0,
+          picks:{}, done:{}, endAt:null, reviewOnly:false };
+
+/* ---------- persistence (best effort only) ---------- */
+function save(){ try{ localStorage.setItem(STORE, JSON.stringify({
+  mode:S.mode, doms:S.doms, order:S.order, i:S.i, picks:S.picks, done:S.done, endAt:S.endAt,
+  screen:S.screen==="setup"?"setup":"quiz" })); }catch(e){} }
+function load(){ try{
+  const r = JSON.parse(localStorage.getItem(STORE)||"null");
+  if(r && r.order && r.order.length){ return r; }
+}catch(e){} return null; }
+function clearSaved(){ try{ localStorage.removeItem(STORE); }catch(e){} }
+
+/* ---------- helpers ---------- */
+const byId = id => Q.find(q=>q.id===id);
+function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+function isRight(q, pick){ if(!pick) return false;
+  const A=[...q.a].sort().join(","), P=[...pick].sort().join(","); return A===P; }
+function esc(s){ return String(s).replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c])); }
+function fmt(s){ // backticks -> <code>
+  return esc(s).replace(/`([^`]+)`/g,'<code>$1</code>').replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>');
+}
+function answeredCount(){ return Object.keys(S.done).length; }
+function scored(){ let c=0; for(const id in S.done){ if(isRight(byId(+id), S.picks[id])) c++; } return c; }
+
+/* ---------- countdown ---------- */
+(function(){
+  const el = document.getElementById("countdown");
+  const days = Math.ceil((EXAM_DATE - new Date())/86400000);
+  el.textContent = days > 0 ? days + (days===1?" day":" days") + " until 4 September"
+                 : days === 0 ? "Exam day — good luck" : "Exam date passed";
+})();
+
+/* ---------- render ---------- */
+const app = document.getElementById("app");
+function render(){
+  if(S.screen==="setup") return renderSetup();
+  if(S.screen==="results") return renderResults();
+  renderQuiz();
+}
+
+function renderSetup(){
+  const resume = load();
+  const counts = {}; Q.forEach(q=>counts[q.d]=(counts[q.d]||0)+1);
+  app.innerHTML = `
+  <div class="card pad setup">
+    <div>
+      <h2>Choose how you want to work</h2>
+      <p class="sub">Practice shows the explanation the moment you answer. Exam simulation holds everything back until the end.</p>
+      <div class="modes">
+        <button class="mode" data-mode="practice" aria-pressed="${S.mode==="practice"}">
+          <strong>Practice</strong>
+          <span>All selected questions, in order. Immediate feedback and full explanation after each answer.</span>
+        </button>
+        <button class="mode" data-mode="exam" aria-pressed="${S.mode==="exam"}">
+          <strong>Exam simulation</strong>
+          <span>60 random questions drawn from the whole bank, 90-minute timer, no feedback until you finish. Matches the real format.</span>
+        </button>
+      </div>
+    </div>
+    <div>
+      <h2>Domains</h2>
+      <p class="sub">Weighted the way the objectives are &mdash; passwords and session management carry the most.</p>
+      <div class="domlist">
+        ${Object.keys(DOMAINS).map(d=>`
+          <button class="dom" data-dom="${d}" aria-pressed="${S.doms.includes(+d)}">
+            <span class="box" aria-hidden="true"></span>
+            <span class="nm">${d}. ${DOMAINS[d]}</span>
+            <span class="ct">${counts[d]}</span>
+          </button>`).join("")}
+      </div>
+      <div class="rowbtns" style="margin-top:10px">
+        <button class="linkish" id="all">Select all</button>
+        <button class="linkish" id="none">Clear</button>
+      </div>
+    </div>
+    <div class="rowbtns">
+      <button class="btn" id="start">Start</button>
+      ${resume ? `<button class="btn ghost" id="resume">Resume &mdash; ${Object.keys(resume.done||{}).length} answered</button>` : ""}
+      <span class="tiny" id="poolnote"></span>
+    </div>
+  </div>`;
+
+  app.querySelectorAll(".mode").forEach(b=>b.onclick=()=>{ S.mode=b.dataset.mode; render(); });
+  app.querySelectorAll(".dom").forEach(b=>b.onclick=()=>{
+    const d=+b.dataset.dom;
+    S.doms = S.doms.includes(d) ? S.doms.filter(x=>x!==d) : S.doms.concat(d).sort();
+    render();
+  });
+  app.querySelector("#all").onclick=()=>{ S.doms=[1,2,3,4,5,6,7]; render(); };
+  app.querySelector("#none").onclick=()=>{ S.doms=[]; render(); };
+  const pool = Q.filter(q=>S.doms.includes(q.d));
+  const note = app.querySelector("#poolnote");
+  note.textContent = S.mode==="exam"
+    ? `${Math.min(60,pool.length)} of ${pool.length} questions · 90 minutes`
+    : `${pool.length} questions`;
+  const startBtn = app.querySelector("#start");
+  startBtn.disabled = pool.length===0;
+  startBtn.onclick = start;
+  const r = app.querySelector("#resume");
+  if(r) r.onclick = ()=>{ const d=load(); Object.assign(S,d,{screen:"quiz",reviewOnly:false}); render(); };
+}
+
+function start(){
+  const pool = Q.filter(q=>S.doms.includes(q.d)).map(q=>q.id);
+  S.order = S.mode==="exam" ? shuffle(pool).slice(0,60) : pool;
+  S.i=0; S.picks={}; S.done={}; S.reviewOnly=false; S.screen="quiz";
+  S.endAt = S.mode==="exam" ? Date.now()+90*60*1000 : null;
+  save(); render(); window.scrollTo({top:0});
+}
+
+function renderRail(){
+  const per = {}; S.order.forEach(id=>{ const d=byId(id).d; per[d]=per[d]||{t:0,a:0}; per[d].t++; if(S.done[id]) per[d].a++; });
+  const ds = Object.keys(per).map(Number).sort();
+  return `<div class="rail">${ds.map(d=>`
+    <div class="seg" style="flex-grow:${per[d].t}" title="${DOMAINS[d]}: ${per[d].a}/${per[d].t}">
+      <i style="width:${Math.round(per[d].a/per[d].t*100)}%"></i></div>`).join("")}</div>
+    <div class="railkey"><span>D1</span><span>D7</span></div>`;
+}
+
+function renderQuiz(){
+  const id = S.order[S.i], q = byId(id);
+  const pick = S.picks[id]||[];
+  const shown = !!S.done[id] && S.mode==="practice";
+  const multi = q.a.length>1;
+
+  app.innerHTML = `
+    ${renderRail()}
+    <div class="card pad">
+      <div class="qmeta">
+        <span class="tag">D${q.d} &middot; ${DOMAINS[q.d]}</span>
+        ${multi?`<span class="tag" style="color:var(--muted);background:var(--surface-2);border-color:var(--line)">Select ${q.a.length}</span>`:""}
+        <span class="qnum">${String(S.i+1).padStart(2,"0")} / ${String(S.order.length).padStart(2,"0")}</span>
+      </div>
+      <p class="stem">${fmt(q.q)}</p>
+      <div class="opts">
+        ${q.opts.map((o,ix)=>{
+          let cls="opt", mark="";
+          if(shown){
+            if(q.a.includes(ix)){ cls+=" correct"; mark="correct"; }
+            else if(pick.includes(ix)){ cls+=" wrongpick"; mark="your answer"; }
+          }
+          return `<button class="${cls}" data-ix="${ix}" aria-pressed="${pick.includes(ix)}" ${shown?"disabled":""}>
+            <span class="key" aria-hidden="true">${KEYS[ix]}</span>
+            <span class="txt">${fmt(o)}</span>
+            ${mark?`<span class="mark">${mark}</span>`:""}
+          </button>`;
+        }).join("")}
+      </div>
+      ${shown?explHTML(q, pick):""}
+    </div>
+    <div class="navbar">
+      <button class="btn ghost" id="prev" ${S.i===0?"disabled":""}>&larr; Back</button>
+      ${shown||S.mode==="exam"
+        ? `<button class="btn" id="next">${S.i===S.order.length-1?"Finish":"Next →"}</button>`
+        : `<button class="btn" id="check" ${pick.length===0?"disabled":""}>Check answer</button>`}
+      <span class="spacer"></span>
+      ${S.mode==="exam"?`<span class="timer" id="timer"></span>`:
+        `<span class="score">${scored()} / ${answeredCount()} correct</span>`}
+      <button class="btn ghost" id="quit">End &amp; score</button>
+    </div>`;
+
+  app.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{
+    const ix=+b.dataset.ix;
+    let p = S.picks[id]||[];
+    if(multi){ p = p.includes(ix) ? p.filter(x=>x!==ix) : p.concat(ix); if(p.length>q.a.length) p.shift(); }
+    else { p = [ix]; }
+    S.picks[id]=p;
+    if(S.mode==="exam") S.done[id]=true;
+    save(); renderQuiz();
+  });
+  const prev=app.querySelector("#prev"); if(prev) prev.onclick=()=>{ S.i=Math.max(0,S.i-1); save(); renderQuiz(); window.scrollTo({top:0}); };
+  const chk=app.querySelector("#check"); if(chk) chk.onclick=()=>{ S.done[id]=true; save(); renderQuiz(); };
+  const nxt=app.querySelector("#next"); if(nxt) nxt.onclick=()=>{
+    if(S.i===S.order.length-1){ finish(); } else { S.i++; save(); renderQuiz(); window.scrollTo({top:0}); } };
+  app.querySelector("#quit").onclick=finish;
+  if(S.mode==="exam") tick();
+}
+
+function explHTML(q, pick){
+  const right = isRight(q,pick);
+  return `<div class="expl">
+    <div class="verdict ${right?"y":"n"}">${right?"Correct":"Not quite"}</div>
+    <div><h4>Why this is the answer</h4><p>${fmt(q.why)}</p></div>
+    <div><h4>Why the others are wrong</h4><p>${fmt(q.wrong)}</p></div>
+    <div class="srcline">${esc(q.ref)}</div>
+  </div>`;
+}
+
+let timerHandle=null;
+function tick(){
+  const el=document.getElementById("timer"); if(!el||!S.endAt) return;
+  const upd=()=>{
+    const left=Math.max(0,S.endAt-Date.now());
+    const m=Math.floor(left/60000), s=Math.floor(left%60000/1000);
+    const t=document.getElementById("timer"); if(!t) return;
+    t.textContent = String(m).padStart(2,"0")+":"+String(s).padStart(2,"0");
+    t.classList.toggle("low", left<10*60*1000);
+    if(left<=0){ clearInterval(timerHandle); finish(); }
+  };
+  upd(); clearInterval(timerHandle); timerHandle=setInterval(upd,1000);
+}
+
+function finish(){ clearInterval(timerHandle); S.screen="results"; save(); render(); window.scrollTo({top:0}); }
+
+function renderResults(){
+  const attempted = S.order.filter(id=>S.done[id]);
+  const right = attempted.filter(id=>isRight(byId(id),S.picks[id]));
+  const pct = attempted.length ? Math.round(right.length/attempted.length*100) : 0;
+  const per={}; S.order.forEach(id=>{ const d=byId(id).d; per[d]=per[d]||{t:0,a:0,r:0};
+    per[d].t++; if(S.done[id]){per[d].a++; if(isRight(byId(id),S.picks[id])) per[d].r++;} });
+  const ds=Object.keys(per).map(Number).sort();
+  const missed = S.order.filter(id=>S.done[id] && !isRight(byId(id),S.picks[id]));
+
+  const verdict = pct>=85 ? "Ready. Do a final pass on the domains below 80%."
+    : pct>=70 ? "Around the pass mark. Tighten the two weakest domains before exam day."
+    : pct>=55 ? "Solid base, gaps in detail. Re-read the weakest domains end to end."
+    : "Go back to the source material for the weakest domains before drilling again.";
+
+  app.innerHTML = `
+  <div class="card pad">
+    <div class="verdictbox">
+      <span class="big">${pct}<span style="font-size:24px">%</span></span>
+      <div>
+        <div style="font-weight:600;font-size:15px">${right.length} of ${attempted.length} correct</div>
+        <div class="tiny">${S.mode==="exam"?"Exam simulation":"Practice"} &middot; ${S.order.length} questions selected</div>
+      </div>
+    </div>
+    <p class="sub" style="margin:10px 0 0;font-size:14px;color:var(--ink-2)">${verdict}</p>
+
+    <div class="hr"></div>
+    <h2 style="font-family:'IBM Plex Serif',Georgia,serif;font-size:17px;font-weight:600">By domain</h2>
+    <div class="bars">
+      ${ds.map(d=>{
+        const p = per[d].a ? Math.round(per[d].r/per[d].a*100) : 0;
+        const cls = per[d].a===0 ? "" : p>=80 ? "strong" : p<60 ? "weak" : "";
+        return `<div class="bar ${cls}">
+          <span class="lbl">${d}. ${DOMAINS[d]}</span>
+          <span class="val">${per[d].r}/${per[d].a||0}${per[d].a<per[d].t?` (${per[d].t-per[d].a} skipped)`:""}</span>
+          <span class="track"><i style="width:${p}%"></i></span>
+        </div>`;
+      }).join("")}
+    </div>
+
+    <div class="hr"></div>
+    <div class="rowbtns">
+      <button class="btn" id="again">New session</button>
+      ${missed.length?`<button class="btn ghost" id="drill">Drill the ${missed.length} missed</button>`:""}
+      ${missed.length?`<button class="btn ghost" id="rev">Review answers</button>`:""}
+    </div>
+  </div>
+  <div id="reviewpane"></div>`;
+
+  app.querySelector("#again").onclick=()=>{ clearSaved(); S.screen="setup"; render(); };
+  const dr=app.querySelector("#drill"); if(dr) dr.onclick=()=>{
+    S.order=missed.slice(); S.i=0; S.picks={}; S.done={}; S.screen="quiz"; S.mode="practice"; S.endAt=null;
+    save(); render(); window.scrollTo({top:0}); };
+  const rv=app.querySelector("#rev"); if(rv) rv.onclick=()=>{
+    const pane=document.getElementById("reviewpane");
+    if(pane.innerHTML){ pane.innerHTML=""; return; }
+    pane.innerHTML = `<div class="card pad" style="margin-top:16px">
+      <h2 style="font-family:'IBM Plex Serif',Georgia,serif;font-size:17px;font-weight:600">Missed questions</h2>
+      ${missed.map(id=>{ const q=byId(id), pick=S.picks[id]||[];
+        return `<div class="review-item">
+          <div class="qmeta"><span class="tag">D${q.d} &middot; ${DOMAINS[q.d]}</span></div>
+          <p class="stem" style="font-size:16px">${fmt(q.q)}</p>
+          <div class="opts">${q.opts.map((o,ix)=>{
+            let cls="opt",mark="";
+            if(q.a.includes(ix)){cls+=" correct";mark="correct";}
+            else if(pick.includes(ix)){cls+=" wrongpick";mark="your answer";}
+            return `<div class="${cls}"><span class="key">${KEYS[ix]}</span><span class="txt">${fmt(o)}</span>${mark?`<span class="mark">${mark}</span>`:""}</div>`;
+          }).join("")}</div>
+          ${explHTML(q,pick)}
+        </div>`; }).join("")}
+    </div>`;
+  };
+}
+
+/* ---------- keyboard ---------- */
+document.addEventListener("keydown", e=>{
+  if(S.screen!=="quiz") return;
+  if(e.target.tagName==="INPUT") return;
+  const n = "1234".indexOf(e.key);
+  if(n>=0){ const b=app.querySelector(`.opt[data-ix="${n}"]`); if(b && !b.disabled){ b.click(); e.preventDefault(); } }
+  if(e.key==="Enter"){ const b=app.querySelector("#next")||app.querySelector("#check");
+    if(b && !b.disabled){ b.click(); e.preventDefault(); } }
+  if(e.key==="ArrowLeft"){ const b=app.querySelector("#prev"); if(b && !b.disabled) b.click(); }
+  if(e.key==="ArrowRight"){ const b=app.querySelector("#next"); if(b && !b.disabled) b.click(); }
+});
+
+render();
+</script>

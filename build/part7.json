@@ -1,0 +1,520 @@
+[
+ {
+  "id": 163,
+  "d": 5,
+  "q": "What is the correct order of the Vault's hierarchical encryption?",
+  "opts": [
+   "Server Key → Safe Key → File Key",
+   "File Key → Safe Key → Server Key",
+   "Recovery Key → File Key → Safe Key",
+   "Safe Key → Server Key → File Key"
+  ],
+  "a": [
+   1
+  ],
+  "why": "Every object is encrypted with its own File Key; the File Key is encrypted with the Safe Key; the Safe Key is encrypted with the Server Key. Reading it outward from the object is the reliable way to remember it: object → Safe → server. The consequence is that without the Server Key, nothing below it can be opened.",
+  "wrong": "The other orders invert the hierarchy. The Recovery Key sits alongside rather than inside this chain: the Safe Key is *also* encrypted with the Recovery public key, so it can be recovered with the Recovery private key.",
+  "ref": "Vault hierarchical encryption"
+ },
+ {
+  "id": 164,
+  "d": 5,
+  "q": "Which Server Key storage option is described as both strong and convenient, and why?",
+  "opts": [
+   "An external medium such as a USB device removed after startup — strong but inconvenient",
+   "The local disk — convenient but weaker",
+   "An HSM — strong and convenient, because the key is used inside the module and is never held in the Vault server's memory",
+   "A network share protected by ACLs"
+  ],
+  "a": [
+   2
+  ],
+  "why": "The three options trade off along one axis. External media is strong because the key can be physically removed after the Vault starts, but that makes unattended restarts impossible. Local disk restarts cleanly but leaves the key on the machine. An HSM resolves the tension: the key never leaves the module, so it is neither on disk nor in the Vault's RAM.",
+  "wrong": "A and B are correctly described but are not the both-strong-and-convenient option. D is not a supported model and would be weaker than local disk.",
+  "ref": "Server Key storage"
+ },
+ {
+  "id": 165,
+  "d": 5,
+  "q": "Where should the Recovery private key be stored?",
+  "opts": [
+   "On the Vault server, alongside the Server Key",
+   "On physical media in at least two secure locations — typically the primary site and the DR site",
+   "In the `System` Safe",
+   "On the CPM server, protected by a credential file"
+  ],
+  "a": [
+   1
+  ],
+  "why": "The Recovery private key is the last resort for opening the Vault's data, so it must be both protected and available. Storing it on the Vault it protects would defeat the purpose; storing only one copy risks losing everything to a single site event. Two secure physical locations — primary and DR — is the documented practice.",
+  "wrong": "A destroys the separation the key exists to provide. C is inside the very system being recovered. D is unrelated — credential files protect component authentication.",
+  "ref": "Recovery keys"
+ },
+ {
+  "id": 166,
+  "d": 5,
+  "q": "How is the Safe Key protected so that recovery is possible?",
+  "opts": [
+   "It is stored in plaintext on the Vault",
+   "It is encrypted with the Server Key and also with the Recovery public key, so it can be recovered using the Recovery private key",
+   "It is derived from the Master user's password",
+   "It is stored in the `VaultInternal` Safe"
+  ],
+  "a": [
+   1
+  ],
+  "why": "Two independent paths to the same Safe Key: the normal operational path through the Server Key, and the break-glass path through the Recovery key pair. That dual encryption is exactly what makes Master-user recovery possible when the Server Key is lost, without weakening day-to-day protection.",
+  "wrong": "A would make the whole hierarchy pointless. C and D are invented mechanisms.",
+  "ref": "Vault hierarchical encryption / recovery"
+ },
+ {
+  "id": 167,
+  "d": 5,
+  "q": "PTA's detections fall into three families. Which set is correct?",
+  "opts": [
+   "Malware, phishing and insider threat",
+   "Attacks that bypass security controls; statistical anomalies; Active Directory risks",
+   "Network, endpoint and cloud",
+   "Preventive, detective and corrective"
+  ],
+  "a": [
+   1
+  ],
+  "why": "Bypass detections cover abuse of privileged accounts whether or not CyberArk manages them — unmanaged privileged access, suspected credential theft, suspicious password change, suspicious in-session activity. Statistical anomalies use profiling to spot irregular hours, irregular source IPs, excessive access and dormant users waking up. AD risks are configuration weaknesses an attacker could abuse, flagged before they are abused.",
+  "wrong": "A is generic security taxonomy. C describes data sources rather than detection families. D is a control classification.",
+  "ref": "PTA — detect"
+ },
+ {
+  "id": 168,
+  "d": 5,
+  "q": "Which PTA detections come from EPM (Endpoint Privilege Manager) rather than from the Vault, logs or AD? (Choose three)",
+  "opts": [
+   "Suspected LSASS credentials harvesting",
+   "Suspected SAM hash harvesting",
+   "Suspected credentials theft from Chrome",
+   "Excessive access to privileged accounts in the Vault"
+  ],
+  "a": [
+   0,
+   1,
+   2
+  ],
+  "why": "The whole \"harvesting / theft from <somewhere on the endpoint>\" family comes from EPM, because those are endpoint memory and application events that only an endpoint agent can see — LSASS, SAM hashes, Chrome, Firefox, VNC, WinSCP, service accounts and cached domain credentials.",
+  "wrong": "D is a Vault-behaviour anomaly derived from Vault activity. The memory hook is worth keeping: endpoint theft → EPM, Vault behaviour → Vault, delegation and SPN issues → AD.",
+  "ref": "PTA — detection sources"
+ },
+ {
+  "id": 169,
+  "d": 5,
+  "q": "Which of these are Active Directory risks that PTA proactively reports? (Choose three)",
+  "opts": [
+   "Unconstrained Delegation",
+   "Risky SPN",
+   "Service account logged on interactively",
+   "Access to the Vault from an irregular IP address"
+  ],
+  "a": [
+   0,
+   1,
+   2
+  ],
+  "why": "These are configuration weaknesses that make an attacker's job easier, and PTA flags them so they can be fixed *before* they are exploited — which is a different value proposition from detecting an attack in progress. Dual Usage belongs to the same family.",
+  "wrong": "D is a statistical anomaly derived from Vault activity, not an AD configuration risk.",
+  "ref": "PTA — Active Directory risks"
+ },
+ {
+  "id": 170,
+  "d": 5,
+  "q": "A Privileged Session Analysis and Response rule is defined by which attributes?",
+  "opts": [
+   "Category, Pattern (a regular expression), Session response, Threat Score and Scope",
+   "Safe, Platform, User and Action",
+   "Severity, Date and Event Type",
+   "Source IP, Destination IP and Port"
+  ],
+  "a": [
+   0
+  ],
+  "why": "Category selects what is being watched — SSH, Universal Keystrokes, SCP, SQL or Windows title. Pattern is the regular expression to match. Session response is Suspend, Terminate or None. Threat Score runs 1–100. Scope narrows the rule to particular Vault users, accounts or machines.",
+  "wrong": "B and D describe other objects entirely. C are the filters used to review PTA events in the Security pane, not the fields that define a response rule. CyberArk recommends studying the predefined rule set first, then modifying and adding rules to fit the organisation.",
+  "ref": "PTA — privileged session analysis and response"
+ },
+ {
+  "id": 171,
+  "d": 5,
+  "q": "With PTA and PSM integrated, what changes for an audit team reviewing recordings?",
+  "opts": [
+   "Recordings are compressed to save space",
+   "Each session is assigned a risk score, so reviewers can prioritise the riskiest sessions instead of sampling at random",
+   "Recordings are automatically deleted if no risk is found",
+   "Only failed sessions are recorded"
+  ],
+  "a": [
+   1
+  ],
+  "why": "This is the practical answer to \"nobody can watch ten thousand hours of RDP\". PTA analyses session activity and scores it, which turns review from random sampling into a ranked queue — and the same integration allows automatic suspension or termination during high-risk activity.",
+  "wrong": "A, C and D are not behaviours of the integration, and C in particular would destroy audit evidence.",
+  "ref": "PTA — PSM integration"
+ },
+ {
+  "id": 172,
+  "d": 5,
+  "q": "Which groups can see PTA security events in the PVWA, and where?",
+  "opts": [
+   "Auditors, in the Privileged Sessions tab",
+   "Security Admins and Security Operators, in the Security pane",
+   "Vault Admins, in System Health",
+   "PVWAMonitor, in Reports"
+  ],
+  "a": [
+   1
+  ],
+  "why": "PTA events surface in the Security pane, which is scoped to Security Admins and Security Operators — a separate audience from the auditors reviewing recordings and the administrators managing the platform. Events are shown on a timeline and can be filtered by severity, event type and date.",
+  "wrong": "A is where session recordings are reviewed. C shows component health. D is the reporting group. Each event card carries the last detection time, the event name, the score and severity, whether remediation has started, and the recommended or automatically taken action.",
+  "ref": "PTA — alert / Security pane"
+ },
+ {
+  "id": 173,
+  "d": 5,
+  "q": "Which statement best captures the Vault's defence-in-depth design?",
+  "opts": [
+   "A single strong firewall protects the Vault",
+   "The Vault runs a hardened, closed operating system with its own built-in firewall, no standard network services, no third-party access, and its own authentication and access control — several independent layers rather than one",
+   "Security is provided by the network team's segmentation",
+   "Encryption alone protects the data"
+  ],
+  "a": [
+   1
+  ],
+  "why": "The Digital Vault's premise is that no single control should be load-bearing. The server is hardened and closed to everything except the CyberArk protocol on its own firewall, the operating system is not available for general use, the Vault authenticates and authorises independently of the domain, and the data is encrypted hierarchically underneath all of it.",
+  "wrong": "A, C and D each describe one layer and treat it as sufficient — which is exactly the assumption the design rejects.",
+  "ref": "Vault security layers / Digital Vault Security Standard"
+ },
+ {
+  "id": 174,
+  "d": 5,
+  "q": "Playback of a PSM recording through the PVWA depends on which group?",
+  "opts": [
+   "`PSMLiveSessionTerminators`",
+   "`PVWAGWAccounts` — the gateway accounts that enable playback through the PVWA",
+   "`Safe Managers`",
+   "`Notification Engines`"
+  ],
+  "a": [
+   1
+  ],
+  "why": "`PVWAGWAccounts` are the gateway accounts with access to password Safes that make PVWA-mediated operations, including recording playback, possible. Alongside them, `PSMAppUsers` creates recording Safes and uploads recordings, `PSMMaster` manages those Safes, and `Auditors` get read access to all of them.",
+  "wrong": "A suspends and terminates live sessions. C is a role name rather than a predefined group. D relates to the ENE.",
+  "ref": "PSM environment — groups"
+ },
+ {
+  "id": 175,
+  "d": 5,
+  "q": "An auditor wants a report of everything a specific user did, and separately everything that happened in a specific Safe. Which permissions are involved?",
+  "opts": [
+   "Audit Users for the user-activity view; View Audit on the Safe for the Safe-activity view",
+   "Manage Users for both",
+   "List Accounts for both",
+   "Backup All Safes for both"
+  ],
+  "a": [
+   0
+  ],
+  "why": "The two questions have two different scopes and therefore two different permissions. \"What did this person do?\" spans the Vault and needs the Vault-level Audit Users authorization. \"What happened in this Safe?\" is bounded by the Safe and needs View Audit on it.",
+  "wrong": "B is a user-administration authorization — the Entitlement report accepts either Manage Users or Audit Users, but Activity Log scope works as described above. C only reveals that accounts exist. D is for backups.",
+  "ref": "Reports — Activity Log permissions"
+ },
+ {
+  "id": 176,
+  "d": 6,
+  "q": "Which statement correctly contrasts a PSM connection with a PSM for SSH connection?",
+  "opts": [
+   "Both always go through the PVWA",
+   "A PSM (Windows) session is normally launched from the PVWA, whereas PSM for SSH lets the user connect straight from a native SSH client without touching the web interface",
+   "PSM for SSH requires the HTML5 Gateway",
+   "Neither records the session"
+  ],
+  "a": [
+   1
+  ],
+  "why": "That is the point of PSM for SSH: administrators keep their own terminal and workflow, connecting with a single SSH command, while the session is still brokered, isolated, recorded and audited. The Windows PSM flow normally starts from the PVWA's Connect button.",
+  "wrong": "A ignores the direct SSH path. C — the HTML5 Gateway fronts the Windows PSM for browser-based sessions. D is wrong: both record.",
+  "ref": "PSM and PSM for SSH flows"
+ },
+ {
+  "id": 177,
+  "d": 6,
+  "q": "Which PSM for SSH connection string is correct?",
+  "opts": [
+   "`ssh targetaccount@vaultuser@psmaddress@targetaddress`",
+   "`ssh vaultuser@targetaccount@targetaddress@psmaddress`",
+   "`ssh psmaddress@vaultuser@targetaccount@targetaddress`",
+   "`ssh vaultuser@psmaddress@targetaccount@targetaddress`"
+  ],
+  "a": [
+   1
+  ],
+  "why": "Read it as a sentence: who you are (your Vault user), what you want to become (the target account), where you are going (the target address), and finally what you actually connect to (the PSM). The PSM address is last because it is the host your SSH client is really opening a session to.",
+  "wrong": "The other orders scramble those four elements. Building the sentence in your head is more reliable at exam time than memorising the string.",
+  "ref": "PSM for SSH"
+ },
+ {
+  "id": 178,
+  "d": 6,
+  "q": "Which connection components belong to PSM for SSH? (Choose three)",
+  "opts": [
+   "`PSMP-SSH`",
+   "`PSMP-SCP`",
+   "`PSMP-SFTP`",
+   "`PSM-WinSCP`"
+  ],
+  "a": [
+   0,
+   1,
+   2
+  ],
+  "why": "The PSMP family covers the SSH world: `PSMP-SSH` for interactive sessions and `PSMP-SCP`, `PSMP-SFTP` and `PSMP-Rsync` for file transfer, all brokered and audited by PSM for SSH.",
+  "wrong": "D is a Windows PSM connection component — WinSCP is a graphical Windows client launched inside a PSM session, which is a different mechanism from a native SSH file transfer through PSMP.",
+  "ref": "Connection components"
+ },
+ {
+  "id": 179,
+  "d": 6,
+  "q": "Estimate the recording storage for 30 days of retention, 250 sessions per day, 60 minutes per session, high-activity RDP.",
+  "opts": [
+   "About 20 GB",
+   "About 155 GB",
+   "About 470 GB",
+   "About 2 TB"
+  ],
+  "a": [
+   1
+  ],
+  "why": "High-activity RDP is budgeted at 300 KB per minute. 30 days x 250 sessions x 60 minutes = 450,000 minutes; 450,000 x 300 KB = 135,000,000 KB, which is about 129 GB. The sizing formula then adds a constant 20 GB, giving roughly 150-155 GB.",
+  "wrong": "Work it as sessions x minutes x rate x days, then add 20 GB. The rate is what usually goes wrong: memorise 100 / 200 / 300 KB per minute for SSH / low-activity RDP / high-activity RDP. Using 100 KB/min here would give about 63 GB; there is no arithmetic that reaches 470 GB or 2 TB at this volume.",
+  "ref": "PSM recording sizing"
+ },
+ {
+  "id": 180,
+  "d": 6,
+  "q": "You are sizing PSM servers for 240 concurrent sessions on virtual machines. How many servers should you plan for, before adding redundancy?",
+  "opts": [
+   "Two — 100 sessions each with headroom",
+   "Four — the guideline is 100 concurrent sessions per PSM server, reduced by up to 40% on a VM, so budget around 60 per virtual server",
+   "One — a single PSM scales to 300",
+   "Six — 40 sessions per server"
+  ],
+  "a": [
+   1
+  ],
+  "why": "The published guideline is up to 100 concurrent sessions per PSM server, and virtualisation can cost up to 40% of that. At roughly 60 sessions per virtual server, 240 concurrent sessions needs four — and that is before you add capacity for failure of one node.",
+  "wrong": "A applies the physical figure to virtual servers. C and D misremember the base number in opposite directions.",
+  "ref": "PSM sizing"
+ },
+ {
+  "id": 181,
+  "d": 6,
+  "q": "From version 14.4, what happens to a PSM recording that reaches 2 GB?",
+  "opts": [
+   "The session is terminated",
+   "The recording is split automatically and continues in a new file",
+   "The recording is truncated and the rest is lost",
+   "The recording is compressed in place"
+  ],
+  "a": [
+   1
+  ],
+  "why": "Automatic splitting at 2 GB means very long sessions no longer produce a single unmanageable object, and nothing is lost. Before this, large recordings were a genuine operational problem for upload and playback.",
+  "wrong": "A would disrupt legitimate work. C would destroy audit evidence — the exact thing recording exists to preserve. D is not the mechanism.",
+  "ref": "PSM recordings — version notes"
+ },
+ {
+  "id": 182,
+  "d": 6,
+  "q": "Which file and parameter define which users may connect to a PSM for SSH server for maintenance, bypassing the PSMP shell?",
+  "opts": [
+   "`sshd_config` — `PSMP_MaintenanceUsers`",
+   "`basic_psmpserver.conf` — `AdminUsers`",
+   "`Basic_psm.ini` — `MaintenanceUsers`",
+   "`PSMHardening.ps1` — `$PSM_CONNECT_USER`"
+  ],
+  "a": [
+   0
+  ],
+  "why": "`PSMP_MaintenanceUsers` in `sshd_config` names the accounts allowed a normal shell on the PSM for SSH host, so administrators can still maintain the server itself without every SSH connection being intercepted and brokered.",
+  "wrong": "B is the PSMP server's main configuration file but not where this is set. C is the Windows PSM's configuration. D is a Windows PSM hardening variable, alongside `$SUPPORT_WEB_APPLICATIONS`.",
+  "ref": "PSM for SSH configuration"
+ },
+ {
+  "id": 183,
+  "d": 6,
+  "q": "You have three PSM servers behind a load balancer. What must be true about recordings?",
+  "opts": [
+   "Recordings stay on whichever PSM handled the session, so playback must be directed to that server",
+   "Recordings are uploaded to the Vault, so playback does not depend on which PSM served the session",
+   "Each PSM needs its own recording Safe named after it",
+   "Load balancing is not supported with recording enabled"
+  ],
+  "a": [
+   1
+  ],
+  "why": "Recordings are uploaded into Vault Safes, not left on the PSM host. That is what makes horizontal scaling straightforward — any PSM can serve any session and the audit trail lands in one governed place. It also means recording Safes inherit Vault protection and Safe-level access control.",
+  "wrong": "A describes a pre-upload state only. C is possible with a dynamic `SessionRecorderSafe` value but is not a requirement. D is false.",
+  "ref": "PSM recordings / load balancing"
+ },
+ {
+  "id": 184,
+  "d": 6,
+  "q": "Which PSM hardening script variables would you review when a PSM must support web application connection components?",
+  "opts": [
+   "`$SUPPORT_WEB_APPLICATIONS` and `$PSM_CONNECT_USER` in `PSMHardening.ps1`",
+   "`AllowSelectHTML5` and `DefaultConnectionMethod`",
+   "`SessionRecorderSafe` and `SessionRecorderSafeRetention`",
+   "`AllowMonitor` and `AllowTerminate`"
+  ],
+  "a": [
+   0
+  ],
+  "why": "Hardening a PSM locks down the interactive session environment, and browser-based connection components need some of that relaxed in a controlled way. `$SUPPORT_WEB_APPLICATIONS` governs that, and `$PSM_CONNECT_USER` identifies the session user the hardening applies to.",
+  "wrong": "B controls HTML5-versus-RDP delivery. C configures recording storage. D governs live monitoring. All real settings, none of them hardening variables.",
+  "ref": "PSM hardening"
+ },
+ {
+  "id": 185,
+  "d": 6,
+  "q": "Why should the Windows active-session and idle-session limits on a PSM server be set to Never?",
+  "opts": [
+   "To let users stay connected as long as they like",
+   "Because a Windows-enforced disconnect can cut a session mid-write and corrupt the recording — session duration should instead be limited at platform level",
+   "Because AppLocker requires it",
+   "Because the HTML5 Gateway does not support timeouts"
+  ],
+  "a": [
+   1
+  ],
+  "why": "Windows session timeouts and PSM recording do not mix: an abrupt disconnect can leave a recording incomplete or corrupt. The right place to bound a session is the platform, where the limit is applied by the PSM itself and the recording is closed cleanly.",
+  "wrong": "A misreads the intent — the point is not unlimited sessions, it is enforcing the limit in the right layer. C and D are invented.",
+  "ref": "PSM configuration"
+ },
+ {
+  "id": 186,
+  "d": 6,
+  "q": "When registering an HTML5 Gateway in the PVWA, which three values are required?",
+  "opts": [
+   "ID, Address (FQDN) and Port",
+   "Username, password and certificate",
+   "Safe, platform and connection component",
+   "IP range, subnet mask and gateway"
+  ],
+  "a": [
+   0
+  ],
+  "why": "Registration under Options → Privileged Session Management → Add Configured PSM Gateway Servers takes an ID, the gateway's fully qualified domain name and its port (443). The ID is then referenced when you associate the gateway with a specific PSM server under that PSM's Connection Details.",
+  "wrong": "B, C and D belong to other configuration objects. Remember the two-step nature: registering the gateway is not enough on its own — it must also be associated with a PSM server and enabled.",
+  "ref": "Secure access with an HTML5 Gateway"
+ },
+ {
+  "id": 187,
+  "d": 6,
+  "q": "A user connecting through the HTML5 Gateway reports the wrong keyboard layout. Which settings are relevant?",
+  "opts": [
+   "`KeyboardLayout` and `ServerKeyboardLayout`, with `AllowLanguageSelection` / `AllowedLanguages` controlling what the user can pick",
+   "`DefaultConnectionMethod`",
+   "`PSMConnectionDefault`",
+   "`EnforceSubnetRules`"
+  ],
+  "a": [
+   0
+  ],
+  "why": "The gateway carries its own keyboard and language parameters because it is translating browser input into RDP. `KeyboardLayout` and `ServerKeyboardLayout` set the client and server sides, while `AllowLanguageSelection`, `AllowedLanguages` and `DisableLanguageSelection` decide how much choice the user gets.",
+  "wrong": "B selects HTML5 versus an RDP file. C sets the default connection component for a platform. D restricts ad hoc connections by subnet.",
+  "ref": "HTML5 Gateway parameters"
+ },
+ {
+  "id": 188,
+  "d": 6,
+  "q": "During a live session an observer sees something suspicious but wants to investigate before cutting the user off. What is the appropriate action?",
+  "opts": [
+   "Terminate the session immediately",
+   "Suspend the session — it can be resumed once the activity is understood, whereas termination is final",
+   "Change the account password",
+   "Delete the recording"
+  ],
+  "a": [
+   1
+  ],
+  "why": "Suspend and terminate are separate deliberately. Suspension freezes the session and preserves the ability to resume, which suits investigation; termination ends it. Both require membership of `PSMLiveSessionTerminators` and the corresponding server setting, and PTA response rules can trigger either automatically on a high-risk pattern.",
+  "wrong": "A forecloses the investigation. C does not stop the session in progress. D destroys evidence.",
+  "ref": "Active session monitoring in PSM"
+ },
+ {
+  "id": 189,
+  "d": 6,
+  "q": "Which statement about PSM text recording is correct?",
+  "opts": [
+   "Text recording replaces video recording",
+   "Text, keystroke and command audit is captured alongside video, and it is what makes the recording archive searchable",
+   "Text recording is only available for SSH sessions",
+   "Text recordings are stored on the PSM server"
+  ],
+  "a": [
+   1
+  ],
+  "why": "The two are complementary. Video shows what the session looked like; the text and command audit is what an auditor can actually query — searching for a command across thousands of sessions rather than watching them. Windows sessions capture window titles and keystrokes; SSH sessions capture the command stream.",
+  "wrong": "A treats them as alternatives. C is too narrow. D is wrong — recordings are uploaded to Vault Safes.",
+  "ref": "Configure video and text recordings"
+ },
+ {
+  "id": 190,
+  "d": 6,
+  "q": "Which Safes are created by a PSM installation? (Choose three)",
+  "opts": [
+   "`PSM`",
+   "`PSMLiveSessions`",
+   "`PSMUnmanagedSessions`",
+   "`PVWAReports`"
+  ],
+  "a": [
+   0,
+   1,
+   2
+  ],
+  "why": "The PSM's own Safe set includes `PSM`, `PSMLiveSessions`, `PSMNotifications`, `PSMRecordings`, `PSM Sessions`, `PSMUniversalConnectors` and `PSMUnmanagedSessions` — infrastructure for configuration, live session state, notifications, connectors and unmanaged ad hoc sessions.",
+  "wrong": "D belongs to the PVWA's set, alongside `PVWAConfig`, `PVWAPrivateUserPrefs`, `PVWAPublicData`, `PVWATaskDefinitions`, `PVWATicketingSystem` and `PVWAUserPrefs`.",
+  "ref": "Built-in Safes"
+ },
+ {
+  "id": 191,
+  "d": 6,
+  "q": "What is the security trade-off an administrator accepts when enabling ad hoc (Secure Connect) sessions?",
+  "opts": [
+   "Sessions are not recorded",
+   "The credentials used are supplied at connect time and are not vaulted, so part of the PSM's security benefit — a secret the user never possesses — is lost",
+   "The PSM cannot isolate the session",
+   "Ad hoc sessions bypass AppLocker"
+  ],
+  "a": [
+   1
+  ],
+  "why": "Isolation and recording still apply, so the session is still brokered through the hardened PSM and still audited. What is lost is credential management: the user has and types the password, so it is neither rotated, nor unique, nor unknown to them. That is why ad hoc access should be scoped to named users or groups and, ideally, treated as a stepping stone to proper onboarding.",
+  "wrong": "A and C are false — ad hoc sessions are recorded and isolated. D is false and would be a serious hardening gap.",
+  "ref": "Configure ad hoc connections"
+ },
+ {
+  "id": 192,
+  "d": 6,
+  "q": "Which parameter sets the default connection component offered for a platform, and where does it live?",
+  "opts": [
+   "`PSMConnectionDefault`, under the platform's UI & Workflows → Connection Components",
+   "`DefaultConnectionMethod`, under Privileged Session Management UI",
+   "`PSMServerID`, under the Safe's properties",
+   "`AllowSelectHTML5`, on the connection component"
+  ],
+  "a": [
+   0
+  ],
+  "why": "`PSMConnectionDefault` names the component that appears pre-selected in the connect drop-down on the Account Details page — useful when a platform has several enabled components and one is the normal choice.",
+  "wrong": "B decides HTML5 versus an RDP file, not which component runs. C is not a Safe property — PSM server association is set at platform level. D lets the user choose the connection method for a component. All four are real settings, which is what makes this a good discrimination question.",
+  "ref": "Default connection component"
+ }
+]
