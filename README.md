@@ -1,6 +1,6 @@
 # CyberArk Defender (PAM-DEF) — Practice Question Bank
 
-**356 practice questions** for the CyberArk Defender – PAM certification, each with the
+**482 practice questions** for the CyberArk Defender – PAM certification, each with the
 correct answer, why it is correct, and why the other options are not.
 
 Written from the official Defender-PAM Study Guide objectives and checked against
@@ -38,8 +38,9 @@ Weighted the way the official objectives are, so the practice reflects the exam.
 | 5 | Manage Security and Audit Functions | 35 |
 | 6 | Configure Session Management | 44 |
 | 7 | Configure User Management (incl. Vendor PAM, Privilege Cloud, SIA/ZSP) | 30 |
+| 8 | Remote Access (CyberArk Remote Access product) | 126 |
 | 9 | Official Sample Questions (CyberArk's own Defender-PAM sample set) | 79 |
-| | **Total** | **356** |
+| | **Total** | **482** |
 
 Beyond the core domains the bank also covers Vault security and hierarchical encryption,
 PTA detections and automatic responses, backup / DR / HA, Distributed and Cluster Vaults,
@@ -77,6 +78,7 @@ Honest accounting of how far each range has been checked:
 | 126–192 | Written from a verified knowledge base; the final documentation pass was cut short — confirm parameter defaults in your own lab |
 | 201–277 | Answers reasoned from official documentation, not yet through a full adversarial pass |
 | 278–356 | CyberArk's own official Defender-PAM sample question set — the source shows questions and options but no answer key, so every answer was independently reasoned from official documentation and not yet through a full adversarial pass |
+| 357–482 | Remote Access domain — deduplicated and rewritten from a study document containing roughly ten overlapping passes over the same material into one clean question per distinct fact; answers taken from that source, not yet through a full adversarial pass |
 
 CyberArk documentation changes. Treat parameter defaults as a starting point for your own
 lab rather than as settled fact, and verify anything you intend to memorise.

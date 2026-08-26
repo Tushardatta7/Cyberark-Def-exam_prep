@@ -188,7 +188,7 @@ button{font:inherit;color:inherit;cursor:pointer}
   <div class="wrap">
     <div class="eyebrow">CyberArk Defender &mdash; PAM</div>
     <h1>PAM-DEF Question Bank</h1>
-    <p>356 questions &mdash; 277 original questions across the seven official exam domains, plus a bonus 79-question set of CyberArk's own official Defender-PAM sample questions, every answer checked against current CyberArk documentation. No overlap with the earlier 100-question bank in your project.</p>
+    <p>482 questions &mdash; 277 original questions across the seven official exam domains, a 126-question Remote Access domain, and a bonus 79-question set of CyberArk's own official Defender-PAM sample questions, every answer checked against current CyberArk documentation. No overlap with the earlier 100-question bank in your project.</p>
     <div class="countdown mono" id="countdown"></div>
   </div>
 </header>
@@ -202,8 +202,11 @@ button{font:inherit;color:inherit;cursor:pointer}
     verified project knowledge base, and 201&ndash;277 were written from a gap analysis of sample-question screenshots &mdash; topics only,
     with every answer reasoned from official documentation rather than copied. Questions 278&ndash;356 (domain 9) come from CyberArk's own
     official Defender-PAM sample question set &mdash; the source material shows the questions and options but not an answer key, so every
-    correct answer was independently reasoned from official documentation, the same way the rest of this bank was built. Treat parameter
-    defaults in these ranges as lab-checkable rather than settled, and verify anything you intend to memorise.
+    correct answer was independently reasoned from official documentation, the same way the rest of this bank was built. Questions
+    357&ndash;482 (domain 8, Remote Access) were deduplicated and rewritten from a study document containing roughly ten overlapping
+    passes over the same material &mdash; one clean question per distinct fact, answers taken from that source. None of these three
+    ranges has been through the full adversarial documentation pass the earlier ranges had; treat parameter defaults as lab-checkable
+    rather than settled, and verify anything you intend to memorise.
   </p>
 </div>
 
@@ -213,7 +216,7 @@ const DOMAINS = {
   1:"Onboard Accounts", 2:"Manage the Application", 3:"Maintenance & Troubleshooting",
   4:"Configure & Manage Passwords", 5:"Security & Audit Functions",
   6:"Session Management", 7:"User Management & Vendor PAM",
-  9:"Official Sample Questions"
+  8:"Remote Access", 9:"Official Sample Questions"
 };
 const KEYS = ["A","B","C","D","E"];
 const STORE = "pamdef-set2-v1";
