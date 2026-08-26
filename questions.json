@@ -4745,5 +4745,1327 @@
   "why": "The PSM connects outward to the target over RDP, so RDP has to be enabled and reachable there — that is the only target-side requirement in this list. Everything else in a PSM deployment lives on the PSM server itself.",
   "wrong": "A is the misconception this question exists to kill: the PSM is a **jump server**, deliberately separate from the targets, and installing it on a target would defeat isolation entirely. B misplaces `PSMConnect`, which is a local Windows user created on the **PSM server** during installation and is the identity end-user sessions run under (with `PSMAdminConnect` for monitoring). D belongs on a separate Linux host in front of the PSM.",
   "ref": "PSM architecture / connecting to Windows targets"
+ },
+ {
+  "id": 278,
+  "d": 9,
+  "q": "Which values are acceptable in the address field of an Account?",
+  "opts": [
+   "It must be a Fully Qualified Domain Name (FQDN).",
+   "It must be an IP address.",
+   "It must be a NetBIOS name.",
+   "Any name that is resolvable on the Central Policy Manager (CPM) server is acceptable."
+  ],
+  "a": [
+   3
+  ],
+  "why": "The Address field just needs to resolve to the target from the CPM server; FQDN, IP address and NetBIOS name are all just examples of resolvable values, not separate mutually-exclusive requirements.",
+  "wrong": "Naming only FQDN, only an IP address, or only a NetBIOS name is too narrow — each is one valid form of a resolvable address, not the general rule.",
+  "ref": "Account address field"
+ },
+ {
+  "id": 279,
+  "d": 9,
+  "q": "The Accounts Feed contains:",
+  "opts": [
+   "accounts that were discovered by CyberArk in the last 30 days.",
+   "accounts that were discovered by CyberArk that have not yet been onboarded.",
+   "all accounts added to the vault in the last 30 days.",
+   "all users added to CyberArk in the last 30 days."
+  ],
+  "a": [
+   1
+  ],
+  "why": "The Accounts Feed is the queue of accounts a discovery process has found that are not yet vaulted — the working list administrators triage through Add Account, bulk upload, or an onboarding rule.",
+  "wrong": "A 30-day window isn't how the feed is scoped, and it lists discovered accounts, not Vault users.",
+  "ref": "Pending Accounts / Accounts Feed"
+ },
+ {
+  "id": 280,
+  "d": 9,
+  "q": "Accounts Discovery allows secure connections to domain controllers.",
+  "opts": [
+   "True",
+   "False"
+  ],
+  "a": [
+   1
+  ],
+  "why": "Discovery uses the scan account's existing rights to query Active Directory or log on to target machines — it doesn't establish or manage any special secure connection to domain controllers as a feature of its own.",
+  "wrong": "This overstates what Discovery does; its job is enumerating accounts, not brokering connections to domain controllers.",
+  "ref": "Accounts Discovery"
+ },
+ {
+  "id": 281,
+  "d": 9,
+  "q": "Which of these accounts onboarding methods is considered proactive?",
+  "opts": [
+   "Accounts Discovery",
+   "Detecting accounts with PTA",
+   "A Rest API integration with account provisioning software",
+   "A DNA scan"
+  ],
+  "a": [
+   2
+  ],
+  "why": "A REST API tied into the provisioning pipeline onboards an account the moment it's created — before it can ever be used unmanaged. That's proactive.",
+  "wrong": "Accounts Discovery, PTA detection and DNA/network scans are all reactive — they find accounts that already exist and may already have been in use unmanaged.",
+  "ref": "Onboarding methods — proactive vs reactive"
+ },
+ {
+  "id": 282,
+  "d": 9,
+  "q": "When creating an onboarding rule, it will be executed upon ________.",
+  "opts": [
+   "All accounts in the pending accounts list.",
+   "Any future accounts discovered by a discovery process.",
+   "Both A and B"
+  ],
+  "a": [
+   2
+  ],
+  "why": "A new rule is evaluated against the current Pending Accounts list immediately, and then continues to run against every account a discovery process finds afterward — both.",
+  "wrong": "Picking only the pending list or only future discoveries describes half of the documented behaviour.",
+  "ref": "Onboarding rules"
+ },
+ {
+  "id": 283,
+  "d": 9,
+  "q": "What are the functions of the Remote Control Agent service? (Choose 3)",
+  "opts": [
+   "Allows remote monitoring of the Vault",
+   "Sends SNMP traps from the Vault",
+   "Maintains audit data",
+   "Allows CyberArk services to be managed (start/stop/status) remotely"
+  ],
+  "a": [
+   0,
+   1,
+   3
+  ],
+  "why": "The Remote Control Agent (PARAgent) lets an administrator monitor the Vault remotely, forwards SNMP traps out of the Vault, and lets CyberArk services be started, stopped or status-checked from a remote Remote Control Client — all without opening RDP to the Vault.",
+  "wrong": "Maintaining audit data is the Vault's own database/auditing function, not something the Remote Control Agent does.",
+  "ref": "Remote Control Agent (PARAgent)"
+ },
+ {
+  "id": 284,
+  "d": 9,
+  "q": "The Vault administrator can change the Vault license by uploading the new license to the system Safe.",
+  "opts": [
+   "True",
+   "False"
+  ],
+  "a": [
+   0
+  ],
+  "why": "License.xml is stored in the System Safe; replacing it there is how a new license is applied to the Vault.",
+  "wrong": "Not applicable — the statement is correct as written.",
+  "ref": "Vault licensing"
+ },
+ {
+  "id": 285,
+  "d": 9,
+  "q": "CyberArk implements license limits by controlling the number and types of users that can be provisioned in the Vault.",
+  "opts": [
+   "True",
+   "False"
+  ],
+  "a": [
+   0
+  ],
+  "why": "PAM licensing is enforced by capping how many Vault users — and of which license type, such as EPV versus External/Vendor users — can be created, not by limiting accounts or Safes directly.",
+  "wrong": "Not applicable — the statement is correct as written.",
+  "ref": "Vault licensing / user types"
+ },
+ {
+  "id": 286,
+  "d": 9,
+  "q": "PSM for Windows (previously known as RDP Proxy) supports connections to which of the following target systems?",
+  "opts": [
+   "Windows",
+   "Unix",
+   "Oracle",
+   "All of the above"
+  ],
+  "a": [
+   3
+  ],
+  "why": "PSM for Windows brokers RDP-based sessions, but through its library of connection components it supports a broad range of target types beyond Windows itself — Unix, databases like Oracle, network devices and more.",
+  "wrong": "Naming only one target type undersells how many connection components PSM for Windows ships with.",
+  "ref": "PSM for Windows / connection components"
+ },
+ {
+  "id": 287,
+  "d": 9,
+  "q": "PSM for SSH (previously known as PSM-SSH Proxy) supports connections to which of the following target systems?",
+  "opts": [
+   "Windows",
+   "Unix",
+   "Oracle",
+   "All of the above"
+  ],
+  "a": [
+   3
+  ],
+  "why": "PSM for SSH is not limited to plain Unix shell sessions — its connection components also cover network devices and database clients, including Oracle, reachable over SSH.",
+  "wrong": "Restricting the answer to a single platform undercounts the connection components PSM for SSH ships with.",
+  "ref": "PSM for SSH / connection components"
+ },
+ {
+  "id": 288,
+  "d": 9,
+  "q": "Within the Vault each password is encrypted by:",
+  "opts": [
+   "the server key.",
+   "the recovery public key.",
+   "the recovery private key.",
+   "its own unique key."
+  ],
+  "a": [
+   3
+  ],
+  "why": "Every stored password gets its own unique encryption key, generated when the object is created — that limits the blast radius if any single key were ever compromised.",
+  "wrong": "The server key protects the Vault database as a whole, and the recovery key pair exists purely for disaster recovery — neither is the per-password key.",
+  "ref": "Vault encryption / hierarchical key model"
+ },
+ {
+  "id": 289,
+  "d": 9,
+  "q": "Which utilities could a Vault administrator use to change debugging levels on the Vault without having to restart the Vault? Choose the two correct options.",
+  "opts": [
+   "PAR Agent",
+   "PrivateArk Server Central Administration",
+   "Edit DBParm.ini in a text editor.",
+   "Setup.exe"
+  ],
+  "a": [
+   0,
+   1
+  ],
+  "why": "The Remote Control Agent (PAR Agent) and the PrivateArk Server Central Administration console can both push a debug-level change to a running Vault without a service restart.",
+  "wrong": "Editing DBParm.ini directly only takes effect after the PrivateArk Server service is restarted, and Setup.exe is the installer, not a runtime configuration tool.",
+  "ref": "Vault debug level / Central Administration"
+ },
+ {
+  "id": 290,
+  "d": 9,
+  "q": "How does the Vault administrator apply a new license file?",
+  "opts": [
+   "Upload the license.xml file to the system Safe and restart the PrivateArk Server service.",
+   "Upload the license.xml file to the system Safe.",
+   "Upload the license.xml file to the Vault Internal Safe and restart the PrivateArk Server service.",
+   "Upload the license.xml file to the Vault Internal Safe."
+  ],
+  "a": [
+   0
+  ],
+  "why": "License.xml is replaced in the System Safe, and the PrivateArk Server service is restarted so the Vault re-reads the license at startup.",
+  "wrong": "Skipping the restart leaves the old license active in memory, and the other two options name the wrong Safe — licensing lives in the System Safe, not an 'Internal' Safe.",
+  "ref": "Vault licensing"
+ },
+ {
+  "id": 291,
+  "d": 9,
+  "q": "Which keys are required to be present in order to start the PrivateArk Server service? (Choose 2)",
+  "opts": [
+   "Recovery public key",
+   "Recovery private key",
+   "Server key",
+   "Safe key"
+  ],
+  "a": [
+   0,
+   2
+  ],
+  "why": "Startup needs the Server key, to unlock the Vault database, and the Recovery public key. The Recovery private key is deliberately kept offline/offsite and is only needed to actually perform a recovery, not for normal startup.",
+  "wrong": "There is no separate 'Safe key' concept at this level, and requiring the recovery private key at every startup would defeat the point of keeping it offline for disaster recovery only.",
+  "ref": "PrivateArk Server startup keys"
+ },
+ {
+  "id": 292,
+  "d": 9,
+  "q": "What is the purpose of the CyberArk Event Notification Engine service?",
+  "opts": [
+   "It sends email messages from the Central Policy Manager (CPM).",
+   "It sends email messages from the Vault.",
+   "It processes audit report messages.",
+   "It makes Vault data available to components."
+  ],
+  "a": [
+   1
+  ],
+  "why": "The Event Notification Engine (ENE) is the Vault-side service that sends email notifications — password requests, Dual Control approvals, Safe events and the like — out of the Vault.",
+  "wrong": "The CPM does not send its own email independently of the Vault; audit reports and component data access are the jobs of other services, not ENE.",
+  "ref": "Event Notification Engine (ENE)"
+ },
+ {
+  "id": 293,
+  "d": 9,
+  "q": "What is the purpose of the PrivateArk Database service?",
+  "opts": [
+   "Communicates with components",
+   "Sends email alerts from the Vault",
+   "Executes password changes",
+   "Maintains Vault metadata"
+  ],
+  "a": [
+   3
+  ],
+  "why": "The PrivateArk Database service is the layer that maintains the Vault's own metadata — the structural information the Server service then exposes to components.",
+  "wrong": "Communicating with components is the PrivateArk Server service's job, email alerts are ENE's job, and password changes are the CPM's job.",
+  "ref": "PrivateArk Database service"
+ },
+ {
+  "id": 294,
+  "d": 9,
+  "q": "What is the purpose of the PrivateArk Server service?",
+  "opts": [
+   "Executes password changes",
+   "Maintains Vault metadata",
+   "Makes Vault data accessible to components",
+   "Sends email alerts from the Vault"
+  ],
+  "a": [
+   2
+  ],
+  "why": "The PrivateArk Server service is what components such as the PVWA, CPM and PSM actually talk to — it is the interface that exposes Vault data to the rest of the environment.",
+  "wrong": "Maintaining metadata is the Database service's role, password changes belong to the CPM, and email alerts belong to ENE.",
+  "ref": "PrivateArk Server service"
+ },
+ {
+  "id": 295,
+  "d": 9,
+  "q": "Select the best practice for storing the Master CD.",
+  "opts": [
+   "Copy the files to the Vault server and discard the CD.",
+   "Copy the contents of the CD to a Hardware Security Module (HSM) and discard the CD.",
+   "Store the CD in a secure location, such as a physical safe.",
+   "Store the CD in a secure location, such as a physical safe, and copy the contents of the CD to a folder secured with NTFS permissions on the Vault."
+  ],
+  "a": [
+   3
+  ],
+  "why": "Best practice keeps the original Master CD physically secured as the authoritative backup, while also placing a working copy in an NTFS-restricted folder on the Vault so the keys are available without physically fetching the CD for routine operations.",
+  "wrong": "Discarding the CD entirely removes your offline backup of the keys, and keeping only the physical copy with no on-server copy makes routine key access unnecessarily manual.",
+  "ref": "Master CD / server key storage"
+ },
+ {
+  "id": 296,
+  "d": 9,
+  "q": "Which of the following are secure options for storing the contents of the Operator CD, while still allowing the contents to be accessible upon a planned Vault restart? Choose the three correct options.",
+  "opts": [
+   "Store the CD in a physical safe and mount the CD every time Vault maintenance is performed.",
+   "Copy the entire contents of the CD to the system Safe on the Vault.",
+   "Copy the entire contents of the CD to a folder on the Vault Server and secure it with NTFS permissions.",
+   "Store the server key in a Hardware Security Module (HSM) and copy the rest the keys from the CD to a folder on the Vault Server and secure it with NTFS permissions."
+  ],
+  "a": [
+   0,
+   2,
+   3
+  ],
+  "why": "Keeping the CD in a physical safe and mounting it for each planned restart, copying the keys into an NTFS-restricted folder on the Vault server, and offloading the server key to an HSM while NTFS-protecting the rest are all documented ways to make the Operator CD's contents available at restart without leaving them exposed.",
+  "wrong": "Copying the keys into the Vault's own System Safe is circular — the keys that decrypt the Vault cannot themselves be protected by the thing they unlock.",
+  "ref": "Operator CD / server key storage"
+ },
+ {
+  "id": 297,
+  "d": 9,
+  "q": "Which service should NOT be running on the DR Vault when the primary Production Vault is up?",
+  "opts": [
+   "PrivateArk Database",
+   "PrivateArk Server",
+   "CyberArk Vault Disaster Recovery (DR) service",
+   "CyberArk Logic Container"
+  ],
+  "a": [
+   1
+  ],
+  "why": "While the primary Vault is active, the DR Vault sits in standby — only the CyberArk Vault Disaster Recovery service runs, replicating data in. The PrivateArk Server service itself only starts once the DR Vault is actually promoted to active.",
+  "wrong": "The DR service is exactly what should be running on a standby DR Vault; naming it as the answer would have the behaviour backwards.",
+  "ref": "Disaster Recovery Vault / failover"
+ },
+ {
+  "id": 298,
+  "d": 9,
+  "q": "Which of the following logs contains information about errors related to PTA?",
+  "opts": [
+   "ITAlog.log",
+   "diamond.log",
+   "pm_error.log",
+   "WebApplication.log"
+  ],
+  "a": [
+   1
+  ],
+  "why": "PTA's analytics engine writes to diamond.log — the PTA-specific log to check for its detection and processing errors.",
+  "wrong": "ITALog.log is the Vault's own log, pm_error.log belongs to the CPM, and WebApplication.log belongs to the PVWA — none of them are PTA's engine log.",
+  "ref": "PTA logs"
+ },
+ {
+  "id": 299,
+  "d": 9,
+  "q": "When a DR Vault Server becomes an active vault, it will automatically fail back to the original state once the Primary Vault comes back online.",
+  "opts": [
+   "True; this is the default behavior.",
+   "False, this is not possible.",
+   "True, if the AllowFailback setting is set to “yes” in the padr.ini file.",
+   "True, if the AllowFailback setting is set to “yes” in the dbparm.ini file."
+  ],
+  "a": [
+   2
+  ],
+  "why": "Automatic failback is opt-in, controlled by the AllowFailback setting in padr.ini, the Disaster Recovery configuration file — it is not default behaviour.",
+  "wrong": "It is not the default and it is not impossible to configure, and the setting that controls it lives in padr.ini, not dbparm.ini.",
+  "ref": "DR failback / padr.ini"
+ },
+ {
+  "id": 300,
+  "d": 9,
+  "q": "When a DR Vault Server becomes an active vault, it will automatically revert back to DR mode once the Primary Vault comes back online.",
+  "opts": [
+   "True; this is the default behavior.",
+   "False, the Vault administrator must manually set the DR Vault to DR mode by setting \"FailoverMode=no\" in the padr.ini file.",
+   "True, if the AllowFailback setting is set to “yes” in the padr.ini file.",
+   "False, the Vault administrator must manually set the DR Vault to DR mode by setting \"FailoverMode=no\" in the dbparm.ini file."
+  ],
+  "a": [
+   1
+  ],
+  "why": "Once a DR Vault has taken over as active, it stays active — an administrator has to deliberately set FailoverMode=no in padr.ini to put it back into DR/standby mode. Nothing about this is automatic.",
+  "wrong": "There is no automatic revert, and the setting that controls it lives in padr.ini, not dbparm.ini.",
+  "ref": "DR failover mode / padr.ini"
+ },
+ {
+  "id": 301,
+  "d": 9,
+  "q": "Which of the following components can be used to create a tape backup of the Vault?",
+  "opts": [
+   "Disaster Recovery",
+   "Distributed Vaults",
+   "Replicate",
+   "High Availability"
+  ],
+  "a": [
+   2
+  ],
+  "why": "The Vault's backup utility, commonly referred to as Replicate (PAReplicate), is the supported mechanism for producing a backup that can be written to tape.",
+  "wrong": "Disaster Recovery, Distributed Vaults and High Availability are all separate resiliency mechanisms; none of them is the backup utility.",
+  "ref": "Vault backup / PAReplicate"
+ },
+ {
+  "id": 302,
+  "d": 9,
+  "q": "A Vault administrator has associated a logon account to one of their Unix root accounts in the Vault. When attempting to change the root account's password the Central Policy Manager (CPM) will:",
+  "opts": [
+   "log in to the system as root, then change root's password.",
+   "log in to the system as the logon account, then change root's password.",
+   "log in to the system as the logon account, run the SU command to log in as root, and then change root's password.",
+   "none of these."
+  ],
+  "a": [
+   2
+  ],
+  "why": "When a logon account is defined, the CPM never authenticates directly as the privileged target account. It connects as the logon account first, then runs the SU command to switch to root using the credential stored in the Vault, and only then performs the password change.",
+  "wrong": "Logging straight in as root is exactly what a logon account is configured to avoid, and stopping at the logon account without the SU step would leave root's password unchanged.",
+  "ref": "Logon account / CPM password change"
+ },
+ {
+  "id": 303,
+  "d": 9,
+  "q": "For a Safe with object level access control enabled the Vault administrator is able to turn off object level access control when it no longer needed on the Safe.",
+  "opts": [
+   "True",
+   "False"
+  ],
+  "a": [
+   1
+  ],
+  "why": "Object Level Access Control is a one-way switch — once enabled on a Safe it cannot later be disabled.",
+  "wrong": "Not applicable — the statement is false as written.",
+  "ref": "Object Level Access Control (OLAC)"
+ },
+ {
+  "id": 304,
+  "d": 9,
+  "q": "The Vault supports Subnet Based Access Control.",
+  "opts": [
+   "True",
+   "False"
+  ],
+  "a": [
+   0
+  ],
+  "why": "The Vault can restrict where a user is allowed to authenticate from based on their source subnet — a documented Vault authentication control.",
+  "wrong": "Not applicable — the statement is true as written.",
+  "ref": "Subnet Based Access Control"
+ },
+ {
+  "id": 305,
+  "d": 9,
+  "q": "The Vault does NOT support Subnet Based Access Control.",
+  "opts": [
+   "True",
+   "False"
+  ],
+  "a": [
+   1
+  ],
+  "why": "This is the same fact as the previous statement asked in reverse — the Vault does support restricting logons by source subnet, so the claim that it does not is false.",
+  "wrong": "Not applicable — the statement is false as written.",
+  "ref": "Subnet Based Access Control"
+ },
+ {
+  "id": 306,
+  "d": 9,
+  "q": "Assuming a Safe has been configured to be accessible during certain hours of the day, a Vault administrator may still access that Safe outside of those hours.",
+  "opts": [
+   "True",
+   "False"
+  ],
+  "a": [
+   1
+  ],
+  "why": "Time-of-day Safe access restrictions are enforced Vault-wide with no silent bypass for administrators — that is the entire point of the control. Outside the configured window, the Safe is inaccessible to its members regardless of their other authorizations.",
+  "wrong": "Not applicable — the statement is false as written.",
+  "ref": "Safe access — time restrictions"
+ },
+ {
+  "id": 307,
+  "d": 9,
+  "q": "A Simple Mail Transfer Protocol (SMTP) integration is critical for monitoring Vault activity and facilitating workflow processes, such as Dual Control.",
+  "opts": [
+   "True",
+   "False"
+  ],
+  "a": [
+   0
+  ],
+  "why": "The Vault's email notifications, including Dual Control approval requests, are delivered through the configured SMTP integration, so without it those workflow notifications never reach approvers.",
+  "wrong": "Not applicable — the statement is true as written.",
+  "ref": "SMTP integration / ENE"
+ },
+ {
+  "id": 308,
+  "d": 9,
+  "q": "What is the purpose of the password verify process?",
+  "opts": [
+   "To test that CyberArk is storing accurate credentials for accounts",
+   "To change the password of an account according to organizationally defined password rules",
+   "To allow CyberArk to manage unknown or lost credentials",
+   "To generate a new complex password"
+  ],
+  "a": [
+   0
+  ],
+  "why": "Verify logs on to the target with the credential currently stored in the Vault purely to confirm it still matches what's really on the target — it never changes anything.",
+  "wrong": "Changing the password per policy is the Change process, recovering an unknown or lost credential is Reconcile, and generating a password is a step inside Change or Reconcile, not Verify's purpose.",
+  "ref": "Password verify"
+ },
+ {
+  "id": 309,
+  "d": 9,
+  "q": "What is the purpose of the password change process?",
+  "opts": [
+   "To test that CyberArk is storing accurate credentials for accounts",
+   "To change the password of an account according to organizationally defined password rules",
+   "To allow CyberArk to manage unknown or lost credentials",
+   "To generate a new complex password"
+  ],
+  "a": [
+   1
+  ],
+  "why": "Change is the CPM rotating a target's password on the policy's schedule, or on demand, to a new value that meets the platform's password rules.",
+  "wrong": "Testing the stored credential is Verify, recovering a lost credential is Reconcile, and generating the password string is just one step inside Change, not its purpose.",
+  "ref": "Password change"
+ },
+ {
+  "id": 310,
+  "d": 9,
+  "q": "In order to grant a permission to a user, an administrator MUST possess that permission themselves.",
+  "opts": [
+   "True",
+   "False"
+  ],
+  "a": [
+   0
+  ],
+  "why": "Safe permission delegation is bounded by what the grantor already holds — an administrator cannot hand out a permission they don't have themselves.",
+  "wrong": "Not applicable — the statement is true as written.",
+  "ref": "Safe permission delegation"
+ },
+ {
+  "id": 311,
+  "d": 9,
+  "q": "A logon account can be specified in the platform settings.",
+  "opts": [
+   "True",
+   "False"
+  ],
+  "a": [
+   0
+  ],
+  "why": "The logon account used to bridge to a privileged target account is one of the settings configured on the platform.",
+  "wrong": "Not applicable — the statement is true as written.",
+  "ref": "Platform settings — logon account"
+ },
+ {
+  "id": 312,
+  "d": 9,
+  "q": "Which Master Policy setting must be active in order to have an account checked out by one user for a pre-determined amount of time?",
+  "opts": [
+   "Require Dual Control password access approval.",
+   "Enforce check-in/check-out exclusive access.",
+   "Enforce one-time password access.",
+   "Enforce check-in/check-out exclusive access and enforce one-time password access."
+  ],
+  "a": [
+   1
+  ],
+  "why": "Check-in/check-out exclusive access is what reserves an account to a single user for a defined checkout window before anyone else can retrieve it.",
+  "wrong": "Dual Control adds an approval gate but doesn't itself create a timed checkout; one-time password access rotates the password after use but doesn't reserve exclusive use for a set period; combining the two isn't necessary just to get timed exclusivity.",
+  "ref": "Master Policy — exclusive access"
+ },
+ {
+  "id": 313,
+  "d": 9,
+  "q": "Which combination of Safe member permissions will allow end users to log in to a remote machine transparently but NOT show or copy the password?",
+  "opts": [
+   "Use Accounts, Retrieve Accounts, List Accounts",
+   "Use Accounts, List Accounts",
+   "Use Accounts",
+   "List Accounts, Retrieve Accounts"
+  ],
+  "a": [
+   1
+  ],
+  "why": "Use Accounts lets a member connect transparently through PSM, and List Accounts lets them see that the account exists. Leaving out Retrieve Accounts is exactly what blocks them from ever revealing or copying the password.",
+  "wrong": "Including Retrieve Accounts defeats the requirement; Use Accounts alone doesn't let the account be found in the list; List plus Retrieve without Use lets them see and copy the password but not connect transparently — the opposite of what's needed.",
+  "ref": "Safe permissions — transparent connect"
+ },
+ {
+  "id": 314,
+  "d": 9,
+  "q": "CyberArk recommends implementing object level access control on all Safes.",
+  "opts": [
+   "True",
+   "False"
+  ],
+  "a": [
+   1
+  ],
+  "why": "OLAC adds real overhead and is recommended only for Safes holding especially sensitive accounts that need per-object restriction, not as a blanket default across every Safe.",
+  "wrong": "Not applicable — the statement is false as written.",
+  "ref": "Object Level Access Control (OLAC)"
+ },
+ {
+  "id": 315,
+  "d": 9,
+  "q": "Which credentials does CyberArk use when managing a target account?",
+  "opts": [
+   "Those of the service account for the CyberArk Password Manager service",
+   "A domain administrator account created for this purpose",
+   "The credentials of the target account",
+   "An account assigned by the Master Policy"
+  ],
+  "a": [
+   2
+  ],
+  "why": "The CPM manages an account using that account's own stored credential, directly or via a configured logon/reconcile account chain, never a separate generic service account.",
+  "wrong": "Neither a Password Manager service account nor a purpose-built domain admin account is how the CPM authenticates to a target, and the Master Policy governs workflow rules, not which credential is used.",
+  "ref": "CPM — target account credentials"
+ },
+ {
+  "id": 316,
+  "d": 9,
+  "q": "What is the purpose of the password reconcile process?",
+  "opts": [
+   "To test that CyberArk is storing accurate credentials for accounts",
+   "To change the password of an account according to organizationally defined password rules",
+   "To allow CyberArk to manage unknown or lost credentials",
+   "To generate a new complex password"
+  ],
+  "a": [
+   2
+  ],
+  "why": "Reconcile exists for the case where the Vault's stored password no longer works and the actual value is unknown — it uses a separate reconcile account to force the target's password back to a value the Vault controls.",
+  "wrong": "Testing a credential that's already believed correct is Verify, routine scheduled rotation is Change, and generating a password string is a step inside both, not the defining purpose of Reconcile.",
+  "ref": "Password reconcile"
+ },
+ {
+  "id": 317,
+  "d": 9,
+  "q": "What is the process to remove object level access control from a Safe?",
+  "opts": [
+   "Uncheck the 'Enable Object Level Access Control' on the Safe Details page in the PVWA.",
+   "Uncheck the 'Enable Object Level Access Control' box in the Safe Properties in PrivateArk.",
+   "This cannot be done.",
+   "Remove all ACLs from the Safe."
+  ],
+  "a": [
+   2
+  ],
+  "why": "Object Level Access Control cannot be reversed once enabled, in either the PVWA or the PrivateArk Client — there is no supported way to turn it back off.",
+  "wrong": "The PVWA and PrivateArk options describe UI steps that don't exist for this purpose, and clearing ACLs is unrelated to the OLAC flag itself.",
+  "ref": "Object Level Access Control (OLAC)"
+ },
+ {
+  "id": 318,
+  "d": 9,
+  "q": "Access control to passwords is implemented by:",
+  "opts": [
+   "Vault authorizations.",
+   "Safe authorizations.",
+   "Master Policy.",
+   "platform settings."
+  ],
+  "a": [
+   1
+  ],
+  "why": "Who can reach a given password is governed by Safe-level permissions — membership and the permissions granted on the Safe the account lives in.",
+  "wrong": "Vault-level authorizations control administrative capabilities, not access to specific passwords, and the Master Policy and platform settings control workflow behaviour rather than who is allowed to retrieve a password.",
+  "ref": "Safe authorizations"
+ },
+ {
+  "id": 319,
+  "d": 9,
+  "q": "If a user is a member of more than one group that has authorizations on a Safe, by default that user is granted:",
+  "opts": [
+   "the Vault will not allow this situation to occur.",
+   "only those permissions that exist on the group added to the Safe first.",
+   "only those permissions that exist in all groups to which the user belongs.",
+   "the cumulative permissions of all the groups to which that user belongs."
+  ],
+  "a": [
+   3
+  ],
+  "why": "Safe permissions are additive — a user's effective permissions are the union of everything granted to every group they belong to on that Safe.",
+  "wrong": "Multiple group memberships on one Safe are entirely normal, and permissions aren't limited to a single first-added group or to the intersection of all groups — they combine.",
+  "ref": "Safe permissions — multiple group membership"
+ },
+ {
+  "id": 320,
+  "d": 9,
+  "q": "Users who have the 'Access Safe without confirmation' permission on a Safe where accounts are configured for Dual Control still need to request approval to use the account.",
+  "opts": [
+   "True",
+   "False"
+  ],
+  "a": [
+   1
+  ],
+  "why": "'Access Safe without confirmation' is specifically the authorization that exempts a user from the Dual Control approval workflow on that Safe.",
+  "wrong": "Not applicable — the statement is false as written.",
+  "ref": "Dual Control / access without confirmation"
+ },
+ {
+  "id": 321,
+  "d": 9,
+  "q": "Which is the purpose of a linked account?",
+  "opts": [
+   "To ensure that a particular collection of accounts all have the same password",
+   "To ensure a particular set of accounts all change at the same time",
+   "To connect the CPM to a target system",
+   "To allow the use of additional passwords within a password management process"
+  ],
+  "a": [
+   3
+  ],
+  "why": "A linked account, such as a logon, reconcile, or extra database account, supplies an additional credential the CPM needs during a management operation on the primary account.",
+  "wrong": "Linked accounts aren't about forcing a group of accounts to share or synchronise passwords, and while a linked logon account does help the CPM reach a target, that's a special case of the broader purpose, not the general definition.",
+  "ref": "Linked accounts"
+ },
+ {
+  "id": 322,
+  "d": 9,
+  "q": "A Vault administrator have associated a logon account to one of their Unix root accounts in the vault. When attempting to verify the root account's password the Central Policy Manager (CPM) will:",
+  "opts": [
+   "ignore the logon account and attempt to log in as root.",
+   "prompt the end user with a dialog box asking for the login account to use.",
+   "log in first with the logon account, then run the SU command to log in as root using the password in the Vault.",
+   "none of these."
+  ],
+  "a": [
+   2
+  ],
+  "why": "Verify follows the same bridging behaviour as Change: the CPM connects as the logon account first, then runs SU to become root using the password currently stored in the Vault, and confirms that password actually works.",
+  "wrong": "Skipping the logon account and going straight in as root is what defining a logon account is meant to prevent, and the process is fully automated, so there's no interactive prompt to the end user.",
+  "ref": "Logon account / CPM password verify"
+ },
+ {
+  "id": 323,
+  "d": 9,
+  "q": "For an account attached to a platform that requires Dual Control based on a Master Policy exception, how would the Vault administrator configure a group of users to access a password without approval?",
+  "opts": [
+   "Create an exception to the Master Policy to exclude the group from the workflow process.",
+   "Edit the Master Policy rule and modify the advanced 'Access Safe without approval' rule to include the group.",
+   "On the Safe in which the account is stored grant the group the 'Access Safe without audit' authorization.",
+   "On the Safe in which the account is stored grant the group the 'Access Safe without confirmation' authorization."
+  ],
+  "a": [
+   3
+  ],
+  "why": "Exempting a specific group from Dual Control approval is done on the Safe itself, by granting that group the 'Access Safe without confirmation' authorization, which overrides the Dual Control requirement for its holders.",
+  "wrong": "Master Policy exceptions are how the Dual Control rule is applied or scoped in the first place, not how a single group is exempted from an already-active rule, and 'Access Safe without audit' controls audit logging, not the approval workflow.",
+  "ref": "Dual Control exception — access without confirmation"
+ },
+ {
+  "id": 324,
+  "d": 9,
+  "q": "Which is the primary purpose of exclusive accounts?",
+  "opts": [
+   "Reduced risk of credential theft",
+   "More frequent password changes",
+   "Non-repudiation (individual accountability)",
+   "To force a 'collusion to commit' fraud ensuring no single actor may use a password without authorization"
+  ],
+  "a": [
+   2
+  ],
+  "why": "Exclusive, check-out access guarantees only one person holds the password at any given time, so any activity under that account can be tied to one specific individual — non-repudiation.",
+  "wrong": "Reducing theft risk and more frequent rotation are side benefits of good password hygiene generally, not what exclusivity specifically buys you, and forcing two people to collude is Dual Control's purpose, not exclusivity's.",
+  "ref": "Exclusive accounts"
+ },
+ {
+  "id": 325,
+  "d": 9,
+  "q": "Which is the primary purpose of one-time passwords?",
+  "opts": [
+   "Reduced risk of credential theft",
+   "More frequent password changes",
+   "Non-repudiation (individual accountability)",
+   "To force a 'collusion to commit' fraud ensuring no single actor may use a password without authorization"
+  ],
+  "a": [
+   0
+  ],
+  "why": "A password that's rotated immediately after each use is worthless to anyone who captures it afterwards — that directly reduces the value of a stolen credential.",
+  "wrong": "OTP does imply frequent changes, but that's a mechanism, not the underlying purpose; individual accountability is exclusive access's job, and forcing collusion is Dual Control's.",
+  "ref": "One-time passwords"
+ },
+ {
+  "id": 326,
+  "d": 9,
+  "q": "Which is the primary purpose of Dual Control?",
+  "opts": [
+   "Reduced risk of credential theft",
+   "More frequent password changes",
+   "Non-repudiation (individual accountability)",
+   "To force a 'collusion to commit' fraud ensuring no single actor may use a password without authorization"
+  ],
+  "a": [
+   3
+  ],
+  "why": "Dual Control requires a second person's explicit approval before a password can be retrieved, so no single individual can act alone — any misuse requires two people to have colluded.",
+  "wrong": "Reduced theft risk, frequent rotation and individual accountability are all effects of other controls, such as OTP and exclusive access, rather than what Dual Control itself is designed to guarantee.",
+  "ref": "Dual Control"
+ },
+ {
+  "id": 327,
+  "d": 9,
+  "q": "What is the name of the platform parameter that determines the length of time a person is allowed to use a one-time password?",
+  "opts": [
+   "MinValidityPeriod",
+   "Interval",
+   "ImmediateInterval",
+   "Timeout"
+  ],
+  "a": [
+   0
+  ],
+  "why": "MinValidityPeriod is the platform parameter that sets how long a one-time password remains usable before it is rotated out from under the user.",
+  "wrong": "Interval and ImmediateInterval govern how often the CPM checks or changes passwords on its normal schedule, and Timeout is unrelated to one-time password validity duration.",
+  "ref": "One-time password platform parameters"
+ },
+ {
+  "id": 328,
+  "d": 9,
+  "q": "Which is the purpose of the HeadStartInterval setting in a platform?",
+  "opts": [
+   "It determines how far in advance audit data is collected for reports.",
+   "It instructs the CPM to initiate the password change process certain number of days before expiration.",
+   "It instructs the AIM provider to 'skip the cache' during the defined time period.",
+   "It alerts users of upcoming password changes a certain number of days before expiration."
+  ],
+  "a": [
+   1
+  ],
+  "why": "HeadStartInterval tells the CPM how many days before an external expiration date, such as an Active Directory password expiry, it should get ahead of the clock and proactively change the password itself.",
+  "wrong": "It has nothing to do with audit data collection, AIM/CCP cache behaviour, or end-user alerting — those are separate mechanisms entirely.",
+  "ref": "HeadStartInterval"
+ },
+ {
+  "id": 329,
+  "d": 9,
+  "q": "Platform settings are applied to:",
+  "opts": [
+   "the entire Vault.",
+   "network areas.",
+   "Safes.",
+   "individual accounts."
+  ],
+  "a": [
+   3
+  ],
+  "why": "Every account is associated with exactly one platform, so that platform's settings apply at the account level — each account individually inherits its platform's configuration.",
+  "wrong": "Platform settings aren't a Vault-wide or Safe-wide default, and network areas are a separate Vault authentication concept unrelated to platforms.",
+  "ref": "Platform settings scope"
+ },
+ {
+  "id": 330,
+  "d": 9,
+  "q": "One can create exceptions to the Master Policy based on:",
+  "opts": [
+   "Safes.",
+   "platforms.",
+   "policies.",
+   "accounts."
+  ],
+  "a": [
+   1
+  ],
+  "why": "Master Policy exceptions are defined per platform — a specific platform can be configured to deviate from a given Master Policy rule.",
+  "wrong": "Exceptions aren't scoped to an individual Safe, a separate policy object, or a single account directly — the platform is the unit of exception.",
+  "ref": "Master Policy exceptions"
+ },
+ {
+  "id": 331,
+  "d": 9,
+  "q": "When managing SSH keys, the Central Policy Manager (CPM) stores the public key:",
+  "opts": [
+   "in the Vault.",
+   "on the target server.",
+   "A and B.",
+   "nowhere because the public key can always be generated from the private key."
+  ],
+  "a": [
+   1
+  ],
+  "why": "The public half of an SSH key pair belongs on the target server's authorized_keys — that's what allows the matching private key to authenticate.",
+  "wrong": "The Vault is where the private key is protected, not the public one, and a public key isn't simply regenerated from the private key on demand in this workflow.",
+  "ref": "SSH key management"
+ },
+ {
+  "id": 332,
+  "d": 9,
+  "q": "When managing SSH keys, the Central Policy Manager (CPM) stores the private key:",
+  "opts": [
+   "in the Vault.",
+   "on the target server.",
+   "A and B.",
+   "nowhere because the private key can always be generated from the public key."
+  ],
+  "a": [
+   0
+  ],
+  "why": "The private key is the sensitive half — the CPM keeps it protected inside the Vault, retrieving it only when a session needs to authenticate.",
+  "wrong": "Storing the private key on the target server would defeat the point of vaulting it, and a private key cannot be derived back out of its public half.",
+  "ref": "SSH key management"
+ },
+ {
+  "id": 333,
+  "d": 9,
+  "q": "Time of day or day of week restrictions on when password changes can occur are configured in the:",
+  "opts": [
+   "Master Policy.",
+   "platform settings.",
+   "Safe settings.",
+   "account details."
+  ],
+  "a": [
+   1
+  ],
+  "why": "Scheduling windows for when the CPM is allowed to perform a change are platform-level parameters, the same family as HeadStartInterval.",
+  "wrong": "The Master Policy sets general rules that apply broadly, and Safe settings and account details don't carry this kind of scheduling parameter.",
+  "ref": "Platform settings — change scheduling"
+ },
+ {
+  "id": 334,
+  "d": 9,
+  "q": "Time of day or day of week restrictions on when password verifications can occur are configured in the:",
+  "opts": [
+   "Master Policy.",
+   "platform settings.",
+   "Safe settings.",
+   "account details."
+  ],
+  "a": [
+   1
+  ],
+  "why": "Like change scheduling, verification timing windows are configured as platform settings.",
+  "wrong": "The Master Policy, Safe settings and account details are not where this scheduling parameter lives.",
+  "ref": "Platform settings — verify scheduling"
+ },
+ {
+  "id": 335,
+  "d": 9,
+  "q": "Time of day or day of week restrictions on when password reconciliations can occur are configured in the:",
+  "opts": [
+   "Master Policy.",
+   "platform settings.",
+   "Safe settings.",
+   "account details."
+  ],
+  "a": [
+   1
+  ],
+  "why": "Reconcile scheduling follows the same pattern as change and verify — it is a platform-level setting.",
+  "wrong": "The Master Policy, Safe settings and account details are not where this scheduling parameter lives.",
+  "ref": "Platform settings — reconcile scheduling"
+ },
+ {
+  "id": 336,
+  "d": 9,
+  "q": "A Safe was recently created by a user who is a member of the LDAP Vault Administrators group. Which of the following users does NOT have access to the newly created Safe by default?",
+  "opts": [
+   "Master",
+   "Administrator",
+   "Auditor",
+   "Backup"
+  ],
+  "a": [
+   1
+  ],
+  "why": "Master and the Auditors group are automatically granted access to every Safe the moment it's created. The built-in local Administrator user is not — it only ends up on a Safe if it is the creator or is explicitly added, and here the Safe was created by an LDAP user, not by Administrator.",
+  "wrong": "Master and Auditor are both auto-added by design, and Backup is the account used for the Vault backup process rather than something relevant to routine Safe membership defaults.",
+  "ref": "Built-in users — default Safe membership"
+ },
+ {
+  "id": 337,
+  "d": 9,
+  "q": "According to the default web options settings, which group grants access to the reports page?",
+  "opts": [
+   "PVWAUsers",
+   "Vault Administrators",
+   "Auditors",
+   "PVWAMonitor"
+  ],
+  "a": [
+   3
+  ],
+  "why": "PVWAMonitor is the group the default PVWA configuration maps to reporting and monitoring access — its members can reach the Reports page.",
+  "wrong": "PVWAUsers is the baseline logon group for ordinary end users, Vault Administrators is a Vault-level authorization group, and Auditors governs audit visibility on Safes rather than the PVWA reports page specifically.",
+  "ref": "PVWA default web access groups"
+ },
+ {
+  "id": 338,
+  "d": 9,
+  "q": "Which report could show all accounts that are past their expiration dates?",
+  "opts": [
+   "Privileged Account Compliance Status report",
+   "Activity log",
+   "Privileged Account Inventory report",
+   "Application Inventory report"
+  ],
+  "a": [
+   0
+  ],
+  "why": "The Compliance Status report flags accounts that violate policy expectations, including ones sitting past their expected password-change date.",
+  "wrong": "The Activity log records events rather than compliance state, and the inventory reports simply list what exists without evaluating it against expiration.",
+  "ref": "Privileged Account Compliance Status report"
+ },
+ {
+  "id": 339,
+  "d": 9,
+  "q": "Which report shows the accounts that are accessible to each user?",
+  "opts": [
+   "Activity report",
+   "Entitlement report",
+   "Privileged Accounts Compliance Status report",
+   "Applications Inventory report"
+  ],
+  "a": [
+   1
+  ],
+  "why": "The Entitlement report is built specifically to answer which accounts a given user can reach — it maps users to the accounts their Safe permissions expose.",
+  "wrong": "The Activity report shows what happened, Compliance Status evaluates policy adherence, and Applications Inventory covers AAM/CCP applications, not user-to-account access.",
+  "ref": "Entitlement report"
+ },
+ {
+  "id": 340,
+  "d": 9,
+  "q": "Which type of automatic remediation can be performed by the PTA in case of a suspected credential theft security event?",
+  "opts": [
+   "Password change",
+   "Password reconciliation",
+   "Session suspension",
+   "Session termination"
+  ],
+  "a": [
+   2
+  ],
+  "why": "When PTA suspects a credential has been stolen and is being used outside of CyberArk's control, its automatic response is to suspend the live session using that credential, containing the incident immediately.",
+  "wrong": "Password change and reconciliation are remediations for password-integrity events, such as an out-of-band change, and outright session termination is a more disruptive response than the documented automatic action for this detection.",
+  "ref": "PTA automatic remediation — credential theft"
+ },
+ {
+  "id": 341,
+  "d": 9,
+  "q": "Which type of automatic remediation can be performed by the PTA in case of a suspicious password change security event?",
+  "opts": [
+   "Password change",
+   "Password reconciliation",
+   "Session suspension",
+   "Session termination"
+  ],
+  "a": [
+   1
+  ],
+  "why": "If PTA detects a password was changed on the target outside of CyberArk's knowledge, the automatic remediation is to reconcile — forcing the target's password back to a value the Vault controls.",
+  "wrong": "A further scheduled change wouldn't address a password that's already out of sync, and suspending or terminating a session doesn't fix a credential-integrity problem that already happened on the target.",
+  "ref": "PTA automatic remediation — suspicious password change"
+ },
+ {
+  "id": 342,
+  "d": 9,
+  "q": "Which of the following PTA detections are included in the Core PAS offering? Choose 2.",
+  "opts": [
+   "Suspected Credential Theft",
+   "Over-Pass-The-Hash",
+   "Golden Ticket",
+   "Unmanaged Privileged Access"
+  ],
+  "a": [
+   0,
+   3
+  ],
+  "why": "Suspected Credential Theft and Unmanaged Privileged Access are the PTA detections bundled into the core PAS offering.",
+  "wrong": "Over-Pass-the-Hash and Golden Ticket detection require the additional network-traffic analysis capability — a Network Sensor or domain controller agent — which sits outside the core bundle.",
+  "ref": "PTA detections — Core PAS scope"
+ },
+ {
+  "id": 343,
+  "d": 9,
+  "q": "PTA can automatically suspend sessions if suspicious activities are detected in a privileged session, but only if the session is made via the CyberArk PSM.",
+  "opts": [
+   "True",
+   "False, the PTA can suspend sessions whether the session is made via the PSM or not."
+  ],
+  "a": [
+   1
+  ],
+  "why": "PTA's session-suspension response isn't limited to PSM-brokered sessions — it can act on suspicious activity in a privileged session regardless of how that session was established.",
+  "wrong": "Restricting the capability to PSM-only sessions understates what PTA can do.",
+  "ref": "PTA — session suspension scope"
+ },
+ {
+  "id": 344,
+  "d": 9,
+  "q": "Which of the following PTA detections require the deployment of a Network Sensor or installing the PTA Agent on the domain controller? (Choose 2)",
+  "opts": [
+   "Suspected credential theft",
+   "Over-Pass-The-Hash",
+   "Golden Ticket",
+   "Unmanaged privileged access"
+  ],
+  "a": [
+   1,
+   2
+  ],
+  "why": "Over-Pass-the-Hash and Golden Ticket are Kerberos-attack detections that depend on analysing domain controller traffic — exactly what the Network Sensor or a domain-controller-installed PTA Agent provides.",
+  "wrong": "Suspected Credential Theft and Unmanaged Privileged Access are derived from Vault-side telemetry and don't require that additional network-traffic deployment.",
+  "ref": "PTA detections — Network Sensor requirement"
+ },
+ {
+  "id": 345,
+  "d": 9,
+  "q": "Which one of the following reports is NOT generated by using the Password Vault Web Access (PVWA)?",
+  "opts": [
+   "Accounts Inventory",
+   "Application Inventory",
+   "Active/Non-Active Users",
+   "Compliance Status"
+  ],
+  "a": [
+   2
+  ],
+  "why": "Accounts Inventory, Application Inventory and Compliance Status are all reports generated natively from the PVWA's Reports page. An Active/Non-Active Users breakdown is not one of PVWA's built-in reports — that kind of view has to be produced by exporting Vault metadata externally.",
+  "wrong": "The other three are standard, named PVWA reports.",
+  "ref": "PVWA reports"
+ },
+ {
+  "id": 346,
+  "d": 9,
+  "q": "What is the purpose of EVD?",
+  "opts": [
+   "To extract vault metadata into a open database platform.",
+   "To allow editing of vault metadata.",
+   "To create a backup of the MySQL database.",
+   "To extract audit data from the vault."
+  ],
+  "a": [
+   0
+  ],
+  "why": "EVD (External Vault Data) exports the Vault's metadata into an external, open database so it can be queried and reported on with ordinary BI and database tools.",
+  "wrong": "EVD is read-only, so it never lets you edit Vault metadata; it isn't a MySQL backup tool, and it moves configuration and metadata, not the audit trail itself.",
+  "ref": "EVD (External Vault Data)"
+ },
+ {
+  "id": 347,
+  "d": 9,
+  "q": "A user has successfully conducted a short PSM session and logged off. However, the user cannot access the Monitoring tab to view the recordings. What is the issue?",
+  "opts": [
+   "The user must login as PSMAdminConnect.",
+   "The PSM service is not running.",
+   "The user is not a member of the PVWAMonitor group.",
+   "The user is not a member of the Auditors group."
+  ],
+  "a": [
+   2
+  ],
+  "why": "Viewing session recordings through the Monitoring tab requires membership in the PVWAMonitor group — the same group that governs reporting and monitoring access in the PVWA.",
+  "wrong": "PSMAdminConnect is a connection user ID, not something an end user logs into the PVWA as; if the PSM service weren't running the session itself would have failed rather than just playback; Auditors governs Safe-level audit visibility, not the PVWA Monitoring tab specifically.",
+  "ref": "PSM recordings — PVWAMonitor group"
+ },
+ {
+  "id": 348,
+  "d": 9,
+  "q": "An auditor needs to login to the PSM in order to live monitor an active session. Which user ID is used to establish the RDP connection to the PSM server?",
+  "opts": [
+   "PSMConnect",
+   "PSMMaster",
+   "PSMGwUser",
+   "PSMAdminConnect"
+  ],
+  "a": [
+   3
+  ],
+  "why": "Live session monitoring connects to the PSM server using the PSMAdminConnect account — the administrative connection ID reserved for monitoring and admin-level PSM access.",
+  "wrong": "PSMConnect is used for ordinary end-user sessions, and PSMMaster and PSMGwUser are not the account used for this RDP connection.",
+  "ref": "PSM live monitoring — PSMAdminConnect"
+ },
+ {
+  "id": 349,
+  "d": 9,
+  "q": "In order to connect to a target device through PSM, the account credentials used for the connection must be stored in the Vault.",
+  "opts": [
+   "True",
+   "False, because the user can also enter credentials manually using Ad-Hoc Access.",
+   "False, because if credentials are not stored in the Vault, the PSM will log into the target device as PSM Connect.",
+   "False, because if credentials are not stored in the Vault, the PSM will prompt for credentials."
+  ],
+  "a": [
+   1
+  ],
+  "why": "PSM doesn't strictly require the target credential to be vaulted — Ad-Hoc Access lets a user supply credentials manually for a connection to an account that isn't, or isn't yet, managed in the Vault.",
+  "wrong": "The account still being logged as PSM Connect, or PSM simply prompting for credentials as a general rule, don't describe the actual documented exception, which is Ad-Hoc Access.",
+  "ref": "PSM Ad-Hoc Access"
+ },
+ {
+  "id": 350,
+  "d": 9,
+  "q": "Via Password Vault Web Access (PVWA), a user initiates a PSM connection to the target Linux machine using RemoteApp. When the client's machine makes an RDP connection to the PSM server, which user will be utilized?",
+  "opts": [
+   "Credentials stored in the Vault for the target machine",
+   "Shadowuser",
+   "PSMConnect",
+   "PSMAdminConnect"
+  ],
+  "a": [
+   2
+  ],
+  "why": "A normal end-user PSM session, RemoteApp or otherwise, connects to the PSM server itself using the PSMConnect account; the target machine's own vaulted credential is used only for the second-hop connection from PSM onward to the Linux target.",
+  "wrong": "The target's stored credential authenticates onward to the Linux box, not the initial RDP hop to PSM, and Shadowuser and PSMAdminConnect are used for other purposes — auto-created shadow sessions and live monitoring respectively.",
+  "ref": "PSM connection flow — PSMConnect"
+ },
+ {
+  "id": 351,
+  "d": 9,
+  "q": "An auditor initiates a live monitoring session to PSM server to view an ongoing live session. When the auditor's machine makes an RDP connection the PSM server, which user will be used?",
+  "opts": [
+   "PSMAdminConnect",
+   "Shadowuser",
+   "PSMConnect",
+   "Credentials stored in the Vault for the target machine"
+  ],
+  "a": [
+   0
+  ],
+  "why": "The same fact as ordinary live-monitoring setup applies here: the initial RDP hop into the PSM server for live monitoring uses PSMAdminConnect.",
+  "wrong": "Shadowuser and PSMConnect serve ordinary end-user sessions rather than auditor monitoring, and the target machine's own credential is irrelevant to this first hop.",
+  "ref": "PSM live monitoring — PSMAdminConnect"
+ },
+ {
+  "id": 352,
+  "d": 9,
+  "q": "Which one of these built-in Vault users is NOT automatically added to a Safe when it is created?",
+  "opts": [
+   "Master",
+   "Administrator",
+   "Auditor",
+   "Operator"
+  ],
+  "a": [
+   1
+  ],
+  "why": "The built-in local Administrator user is not automatically added to every new Safe — only Master and the Auditors group get that automatic membership.",
+  "wrong": "Master and Auditor are both auto-added by design; Operator is not a built-in user with guaranteed Safe membership either, but Administrator is the one this fact specifically calls out.",
+  "ref": "Built-in users — default Safe membership"
+ },
+ {
+  "id": 353,
+  "d": 9,
+  "q": "Vault administrators must manually add the Auditors group to newly created Safes so auditors will have sufficient access to run reports.",
+  "opts": [
+   "True",
+   "False"
+  ],
+  "a": [
+   1
+  ],
+  "why": "The Auditors group is automatically given access to every Safe as soon as it's created — no manual step is needed.",
+  "wrong": "Not applicable — the statement is false as written.",
+  "ref": "Auditors group — default Safe membership"
+ },
+ {
+  "id": 354,
+  "d": 9,
+  "q": "Which user(s) can access all passwords in the Vault?",
+  "opts": [
+   "Administrator",
+   "Any member of Vault administrators",
+   "Any member of auditors",
+   "Master"
+  ],
+  "a": [
+   3
+  ],
+  "why": "The built-in Master user has an overriding ability to reach every Safe and every account in the Vault — it exists precisely as the ultimate-recovery, all-access identity.",
+  "wrong": "Neither the local Administrator user, membership in the Vault Administrators group, nor membership in Auditors grants blanket access to every password by default — each still depends on explicit Safe permissions.",
+  "ref": "Master user"
+ },
+ {
+  "id": 355,
+  "d": 9,
+  "q": "A user is receiving the error message \"ITATS006E Station is suspended for User jsmith\" when attempting to sign into the Password Vault Web Access (PVWA). Which utility would a Vault administrator use to correct this problem?",
+  "opts": [
+   "createcredfile.exe",
+   "cavaultmanager.exe",
+   "PrivateArk",
+   "PVWA"
+  ],
+  "a": [
+   2
+  ],
+  "why": "A suspended user is reactivated from the PrivateArk Client, under Users and Groups — the administrative console for clearing a station or user suspension.",
+  "wrong": "createcredfile.exe generates component credential files, cavaultmanager.exe performs Vault-level maintenance operations unrelated to reactivating a suspended user, and the PVWA is what jsmith is locked out of in the first place.",
+  "ref": "User suspension — ITATS006E"
+ },
+ {
+  "id": 356,
+  "d": 9,
+  "q": "Which user is automatically added to all Safes and cannot be removed?",
+  "opts": [
+   "Auditor",
+   "Administrator",
+   "Master",
+   "Operator"
+  ],
+  "a": [
+   2
+  ],
+  "why": "Master is hard-wired into every Safe with no way to remove it — CyberArk's built-in guarantee that the Vault can never be permanently locked out of its own data.",
+  "wrong": "Auditor is auto-added too, but as a group rather than this specific named user, and neither Administrator nor Operator carries this un-removable guarantee.",
+  "ref": "Master user"
  }
 ]
