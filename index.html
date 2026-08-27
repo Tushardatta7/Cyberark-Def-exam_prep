@@ -108,6 +108,9 @@ button{font:inherit;color:inherit;cursor:pointer}
 .tiny{font-size:12px;color:var(--muted)}
 .linkish{background:none;border:0;padding:0;color:var(--accent);font-size:12.5px;
   text-decoration:underline;text-underline-offset:3px}
+.numinput{width:88px;padding:8px 10px;border:1px solid var(--line);border-radius:7px;
+  background:var(--surface-2);color:var(--ink);font-size:14.5px;font-family:"IBM Plex Mono",monospace}
+.numinput:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
 
 /* ---------- progress rail: 7 segments = 7 exam domains ---------- */
 .rail{display:flex;gap:3px;margin-bottom:18px}
@@ -229,11 +232,12 @@ const STORE = "pamdef-set2-v1";
 const EXAM_DATE = new Date("2026-09-04T09:00:00+06:00");
 
 let S = { screen:"setup", mode:"practice", doms:[1,2,3,4,5,6,7], order:[], i:0,
-          picks:{}, done:{}, endAt:null, reviewOnly:false };
+          picks:{}, done:{}, endAt:null, reviewOnly:false, count:null, optOrder:{} };
 
 /* ---------- persistence (best effort only) ---------- */
 function save(){ try{ localStorage.setItem(STORE, JSON.stringify({
   mode:S.mode, doms:S.doms, order:S.order, i:S.i, picks:S.picks, done:S.done, endAt:S.endAt,
+  count:S.count, optOrder:S.optOrder,
   screen:S.screen==="setup"?"setup":"quiz" })); }catch(e){} }
 function load(){ try{
   const r = JSON.parse(localStorage.getItem(STORE)||"null");
@@ -272,6 +276,9 @@ function render(){
 function renderSetup(){
   const resume = load();
   const counts = {}; Q.forEach(q=>counts[q.d]=(counts[q.d]||0)+1);
+  const pool = Q.filter(q=>S.doms.includes(q.d));
+  const defaultCount = S.mode==="exam" ? Math.min(60,pool.length) : pool.length;
+  const effCount = S.count!=null ? Math.min(S.count,Math.max(pool.length,1)) : defaultCount;
   app.innerHTML = `
   <div class="card pad setup">
     <div>
@@ -280,11 +287,11 @@ function renderSetup(){
       <div class="modes">
         <button class="mode" data-mode="practice" aria-pressed="${S.mode==="practice"}">
           <strong>Practice</strong>
-          <span>All selected questions, in order. Immediate feedback and full explanation after each answer.</span>
+          <span>All selected questions by default &mdash; set a smaller number below for a quick session. Immediate feedback and full explanation after each answer.</span>
         </button>
         <button class="mode" data-mode="exam" aria-pressed="${S.mode==="exam"}">
           <strong>Exam simulation</strong>
-          <span>60 random questions drawn from the whole bank, 90-minute timer, no feedback until you finish. Matches the real format.</span>
+          <span>60 random questions by default &mdash; set your own count below. 90-minute timer, no feedback until you finish. Matches the real format.</span>
         </button>
       </div>
     </div>
@@ -304,10 +311,17 @@ function renderSetup(){
         <button class="linkish" id="none">Clear</button>
       </div>
     </div>
+    <div>
+      <h2>How many questions</h2>
+      <p class="sub">Defaults to the full selection for Practice, or 60 for Exam simulation. Set a smaller number to pull a random sample instead.</p>
+      <div class="rowbtns">
+        <input type="number" id="count" class="numinput" min="1" max="${Math.max(pool.length,1)}" value="${effCount}" ${pool.length===0?"disabled":""}>
+        <span class="tiny" id="poolnote"></span>
+      </div>
+    </div>
     <div class="rowbtns">
       <button class="btn" id="start">Start</button>
       ${resume ? `<button class="btn ghost" id="resume">Resume &mdash; ${Object.keys(resume.done||{}).length} answered</button>` : ""}
-      <span class="tiny" id="poolnote"></span>
     </div>
   </div>`;
 
@@ -317,25 +331,40 @@ function renderSetup(){
     S.doms = S.doms.includes(d) ? S.doms.filter(x=>x!==d) : S.doms.concat(d).sort();
     render();
   });
-  app.querySelector("#all").onclick=()=>{ S.doms=[1,2,3,4,5,6,7]; render(); };
+  app.querySelector("#all").onclick=()=>{ S.doms=Object.keys(DOMAINS).map(Number); render(); };
   app.querySelector("#none").onclick=()=>{ S.doms=[]; render(); };
-  const pool = Q.filter(q=>S.doms.includes(q.d));
+
   const note = app.querySelector("#poolnote");
-  note.textContent = S.mode==="exam"
-    ? `${Math.min(60,pool.length)} of ${pool.length} questions · 90 minutes`
-    : `${pool.length} questions`;
+  const updateNote = ()=>{
+    const n = S.count!=null ? Math.min(S.count,pool.length) : defaultCount;
+    note.textContent = `${n} of ${pool.length} questions${S.mode==="exam"?" · 90 minutes":""}`;
+  };
+  updateNote();
+
+  const countInput = app.querySelector("#count");
+  if(countInput) countInput.oninput = ()=>{
+    S.count = Math.max(1, Math.min(pool.length||1, parseInt(countInput.value)||1));
+    updateNote();
+  };
+
   const startBtn = app.querySelector("#start");
   startBtn.disabled = pool.length===0;
   startBtn.onclick = start;
   const r = app.querySelector("#resume");
-  if(r) r.onclick = ()=>{ const d=load(); Object.assign(S,d,{screen:"quiz",reviewOnly:false}); render(); };
+  if(r) r.onclick = ()=>{ const d=load(); Object.assign(S,d,{screen:"quiz",reviewOnly:false}); if(!S.optOrder) S.optOrder={}; render(); };
 }
+
+function shuffledOptOrder(id){ return shuffle([...Array(byId(id).opts.length).keys()]); }
 
 function start(){
   const pool = Q.filter(q=>S.doms.includes(q.d)).map(q=>q.id);
-  S.order = S.mode==="exam" ? shuffle(pool).slice(0,60) : pool;
+  const defaultCount = S.mode==="exam" ? Math.min(60,pool.length) : pool.length;
+  const n = Math.max(1, Math.min(S.count!=null?S.count:defaultCount, pool.length));
+  S.order = (S.mode==="exam" || n<pool.length) ? shuffle(pool).slice(0,n) : pool;
   S.i=0; S.picks={}; S.done={}; S.reviewOnly=false; S.screen="quiz";
   S.endAt = S.mode==="exam" ? Date.now()+90*60*1000 : null;
+  S.optOrder = {};
+  S.order.forEach(id=>{ S.optOrder[id] = shuffledOptOrder(id); });
   save(); render(); window.scrollTo({top:0});
 }
 
@@ -348,11 +377,35 @@ function renderRail(){
     <div class="railkey"><span>D1</span><span>D7</span></div>`;
 }
 
+function displayOrder(q, id){
+  const o = S.optOrder && S.optOrder[id];
+  return (o && o.length===q.opts.length) ? o : q.opts.map((_,i)=>i);
+}
+
+function renderOptsHTML(q, id, pick, shown, interactive){
+  const order = displayOrder(q, id);
+  return `<div class="opts">${order.map((ix,pos)=>{
+    let cls="opt", mark="";
+    if(shown){
+      if(q.a.includes(ix)){ cls+=" correct"; mark="correct"; }
+      else if(pick.includes(ix)){ cls+=" wrongpick"; mark="your answer"; }
+    }
+    const tag = interactive ? "button" : "div";
+    const attrs = interactive ? `data-ix="${ix}" data-pos="${pos}" aria-pressed="${pick.includes(ix)}" ${shown?"disabled":""}` : "";
+    return `<${tag} class="${cls}" ${attrs}>
+      <span class="key" aria-hidden="true">${KEYS[pos]}</span>
+      <span class="txt">${fmt(q.opts[ix])}</span>
+      ${mark?`<span class="mark">${mark}</span>`:""}
+    </${tag}>`;
+  }).join("")}</div>`;
+}
+
 function renderQuiz(){
   const id = S.order[S.i], q = byId(id);
   const pick = S.picks[id]||[];
   const shown = !!S.done[id] && S.mode==="practice";
   const multi = q.a.length>1;
+  const attempted = `${answeredCount()} / ${S.order.length} attempted`;
 
   app.innerHTML = `
     ${renderRail()}
@@ -363,20 +416,7 @@ function renderQuiz(){
         <span class="qnum">${String(S.i+1).padStart(2,"0")} / ${String(S.order.length).padStart(2,"0")}</span>
       </div>
       <p class="stem">${fmt(q.q)}</p>
-      <div class="opts">
-        ${q.opts.map((o,ix)=>{
-          let cls="opt", mark="";
-          if(shown){
-            if(q.a.includes(ix)){ cls+=" correct"; mark="correct"; }
-            else if(pick.includes(ix)){ cls+=" wrongpick"; mark="your answer"; }
-          }
-          return `<button class="${cls}" data-ix="${ix}" aria-pressed="${pick.includes(ix)}" ${shown?"disabled":""}>
-            <span class="key" aria-hidden="true">${KEYS[ix]}</span>
-            <span class="txt">${fmt(o)}</span>
-            ${mark?`<span class="mark">${mark}</span>`:""}
-          </button>`;
-        }).join("")}
-      </div>
+      ${renderOptsHTML(q, id, pick, shown, true)}
       ${shown?explHTML(q, pick):""}
     </div>
     <div class="navbar">
@@ -385,8 +425,8 @@ function renderQuiz(){
         ? `<button class="btn" id="next">${S.i===S.order.length-1?"Finish":"Next →"}</button>`
         : `<button class="btn" id="check" ${pick.length===0?"disabled":""}>Check answer</button>`}
       <span class="spacer"></span>
-      ${S.mode==="exam"?`<span class="timer" id="timer"></span>`:
-        `<span class="score">${scored()} / ${answeredCount()} correct</span>`}
+      ${S.mode==="exam"?`<span class="score">${attempted}</span><span class="timer" id="timer"></span>`:
+        `<span class="score">${attempted} &middot; ${scored()} correct</span>`}
       <button class="btn ghost" id="quit">End &amp; score</button>
     </div>`;
 
@@ -484,6 +524,7 @@ function renderResults(){
   app.querySelector("#again").onclick=()=>{ clearSaved(); S.screen="setup"; render(); };
   const dr=app.querySelector("#drill"); if(dr) dr.onclick=()=>{
     S.order=missed.slice(); S.i=0; S.picks={}; S.done={}; S.screen="quiz"; S.mode="practice"; S.endAt=null;
+    S.optOrder={}; S.order.forEach(id=>{ S.optOrder[id]=shuffledOptOrder(id); });
     save(); render(); window.scrollTo({top:0}); };
   const rv=app.querySelector("#rev"); if(rv) rv.onclick=()=>{
     const pane=document.getElementById("reviewpane");
@@ -494,12 +535,7 @@ function renderResults(){
         return `<div class="review-item">
           <div class="qmeta"><span class="tag">D${q.d} &middot; ${DOMAINS[q.d]}</span></div>
           <p class="stem" style="font-size:16px">${fmt(q.q)}</p>
-          <div class="opts">${q.opts.map((o,ix)=>{
-            let cls="opt",mark="";
-            if(q.a.includes(ix)){cls+=" correct";mark="correct";}
-            else if(pick.includes(ix)){cls+=" wrongpick";mark="your answer";}
-            return `<div class="${cls}"><span class="key">${KEYS[ix]}</span><span class="txt">${fmt(o)}</span>${mark?`<span class="mark">${mark}</span>`:""}</div>`;
-          }).join("")}</div>
+          ${renderOptsHTML(q, id, pick, true, false)}
           ${explHTML(q,pick)}
         </div>`; }).join("")}
     </div>`;
@@ -511,7 +547,7 @@ document.addEventListener("keydown", e=>{
   if(S.screen!=="quiz") return;
   if(e.target.tagName==="INPUT") return;
   const n = "1234".indexOf(e.key);
-  if(n>=0){ const b=app.querySelector(`.opt[data-ix="${n}"]`); if(b && !b.disabled){ b.click(); e.preventDefault(); } }
+  if(n>=0){ const b=app.querySelector(`.opt[data-pos="${n}"]`); if(b && !b.disabled){ b.click(); e.preventDefault(); } }
   if(e.key==="Enter"){ const b=app.querySelector("#next")||app.querySelector("#check");
     if(b && !b.disabled){ b.click(); e.preventDefault(); } }
   if(e.key==="ArrowLeft"){ const b=app.querySelector("#prev"); if(b && !b.disabled) b.click(); }
