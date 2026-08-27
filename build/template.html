@@ -42,6 +42,8 @@ body{
   font-size:16px; line-height:1.55; -webkit-font-smoothing:antialiased;
 }
 .wrap{max-width:820px;margin:0 auto;padding:0 20px 96px}
+body.quiz-mode #mainwrap{max-width:1120px}
+body.quiz-mode #mainwrap .foot{max-width:820px}
 .mono{font-family:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace}
 code{font-family:"IBM Plex Mono",ui-monospace,Menlo,monospace;font-size:.88em;
   background:var(--surface-2);border:1px solid var(--line-2);border-radius:4px;padding:.08em .34em}
@@ -167,6 +169,57 @@ button{font:inherit;color:inherit;cursor:pointer}
   border-radius:6px;padding:5px 10px}
 .timer.low{color:var(--no);border-color:var(--no-line);background:var(--no-soft)}
 
+/* ---------- question palette ---------- */
+.quizgrid{display:grid;grid-template-columns:212px minmax(0,1fr);gap:18px;align-items:start}
+.quizgrid .navbar{margin:0}
+.palette{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);
+  box-shadow:var(--shadow);padding:14px;position:sticky;top:14px;
+  max-height:calc(100vh - 28px);display:flex;flex-direction:column;gap:10px}
+.palhead{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+.palhead .t{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--muted)}
+.palhead .n{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--muted);
+  font-variant-numeric:tabular-nums}
+.palfilters{display:flex;gap:4px}
+.palfilters button{flex:1;font-family:"IBM Plex Mono",monospace;font-size:10.5px;
+  letter-spacing:.05em;text-transform:uppercase;padding:5px 3px;border-radius:5px;
+  background:var(--surface-2);border:1px solid var(--line);color:var(--muted)}
+.palfilters button:hover{border-color:var(--accent-line)}
+.palfilters button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+.palgrid{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;overflow-y:auto;padding:2px}
+.pq{position:relative;aspect-ratio:1;display:grid;place-items:center;border-radius:6px;
+  font-family:"IBM Plex Mono",monospace;font-size:12px;font-variant-numeric:tabular-nums;
+  background:var(--surface-2);border:1px solid var(--line);color:var(--ink-2);
+  transition:border-color .12s,background .12s}
+.pq:hover{border-color:var(--accent-line)}
+.pq.part{border-style:dashed;border-color:var(--accent-line);color:var(--accent)}
+.pq.ans{background:var(--accent-soft);border-color:var(--accent-line);color:var(--accent)}
+.pq.ok{background:var(--ok-soft);border-color:var(--ok-line);color:var(--ok)}
+.pq.bad{background:var(--no-soft);border-color:var(--no-line);color:var(--no)}
+.pq.cur{outline:2px solid var(--accent);outline-offset:1px;font-weight:600}
+.pq .fl{position:absolute;top:-3px;right:-3px;width:7px;height:7px;border-radius:50%;
+  background:var(--accent);border:1.5px solid var(--surface)}
+.palempty{font-size:12px;color:var(--muted);padding:10px 2px;line-height:1.5}
+.pallegend{display:flex;flex-wrap:wrap;gap:4px 10px;font-family:"IBM Plex Mono",monospace;
+  font-size:9.5px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);
+  border-top:1px solid var(--line-2);padding-top:9px}
+.pallegend span{display:inline-flex;align-items:center;gap:4px}
+.pallegend i{width:8px;height:8px;border-radius:2px;border:1px solid var(--line);
+  background:var(--surface-2);display:block}
+.pallegend i.ok{background:var(--ok-soft);border-color:var(--ok-line)}
+.pallegend i.bad{background:var(--no-soft);border-color:var(--no-line)}
+.pallegend i.ans{background:var(--accent-soft);border-color:var(--accent-line)}
+.flagbtn{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.05em;
+  text-transform:uppercase;padding:4px 11px;border-radius:999px;background:var(--surface-2);
+  border:1px solid var(--line);color:var(--muted);transition:background .12s,border-color .12s}
+.flagbtn:hover{border-color:var(--accent-line)}
+.flagbtn[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent-line);color:var(--accent)}
+@media (max-width:900px){
+  .quizgrid{grid-template-columns:1fr}
+  .palette{position:static;max-height:none;order:-1}
+  .palgrid{max-height:168px}
+}
+
 /* ---------- results ---------- */
 .big{font-family:"IBM Plex Serif",Georgia,serif;font-size:52px;font-weight:600;
   line-height:1;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
@@ -196,7 +249,7 @@ button{font:inherit;color:inherit;cursor:pointer}
   </div>
 </header>
 
-<div class="wrap">
+<div class="wrap" id="mainwrap">
   <div id="app"></div>
   <p class="foot">
     Written from CyberArk's official documentation and the Defender-PAM Study Guide &mdash; not from exam dumps.
@@ -226,12 +279,13 @@ const STORE = "pamdef-set2-v1";
 const EXAM_DATE = new Date("2026-09-04T09:00:00+06:00");
 
 let S = { screen:"setup", mode:"practice", doms:[1,2,3,4,5,6,7], order:[], i:0,
-          picks:{}, done:{}, endAt:null, reviewOnly:false, count:null, optOrder:{} };
+          picks:{}, done:{}, endAt:null, reviewOnly:false, count:null, optOrder:{},
+          flags:{}, palFilter:"all" };
 
 /* ---------- persistence (best effort only) ---------- */
 function save(){ try{ localStorage.setItem(STORE, JSON.stringify({
   mode:S.mode, doms:S.doms, order:S.order, i:S.i, picks:S.picks, done:S.done, endAt:S.endAt,
-  count:S.count, optOrder:S.optOrder,
+  count:S.count, optOrder:S.optOrder, flags:S.flags, palFilter:S.palFilter,
   screen:S.screen==="setup"?"setup":"quiz" })); }catch(e){} }
 function load(){ try{
   const r = JSON.parse(localStorage.getItem(STORE)||"null");
@@ -262,6 +316,7 @@ function scored(){ let c=0; for(const id in S.done){ if(isRight(byId(+id), S.pic
 /* ---------- render ---------- */
 const app = document.getElementById("app");
 function render(){
+  document.body.classList.toggle("quiz-mode", S.screen==="quiz");
   if(S.screen==="setup") return renderSetup();
   if(S.screen==="results") return renderResults();
   renderQuiz();
@@ -345,7 +400,8 @@ function renderSetup(){
   startBtn.disabled = pool.length===0;
   startBtn.onclick = start;
   const r = app.querySelector("#resume");
-  if(r) r.onclick = ()=>{ const d=load(); Object.assign(S,d,{screen:"quiz",reviewOnly:false}); if(!S.optOrder) S.optOrder={}; render(); };
+  if(r) r.onclick = ()=>{ const d=load(); Object.assign(S,d,{screen:"quiz",reviewOnly:false});
+    if(!S.optOrder) S.optOrder={}; if(!S.flags) S.flags={}; if(!S.palFilter) S.palFilter="all"; render(); };
 }
 
 function shuffledOptOrder(id){ return shuffle([...Array(byId(id).opts.length).keys()]); }
@@ -357,7 +413,7 @@ function start(){
   S.order = (S.mode==="exam" || n<pool.length) ? shuffle(pool).slice(0,n) : pool;
   S.i=0; S.picks={}; S.done={}; S.reviewOnly=false; S.screen="quiz";
   S.endAt = S.mode==="exam" ? Date.now()+90*60*1000 : null;
-  S.optOrder = {};
+  S.flags={}; S.palFilter="all"; S.optOrder = {};
   S.order.forEach(id=>{ S.optOrder[id] = shuffledOptOrder(id); });
   save(); render(); window.scrollTo({top:0});
 }
@@ -368,7 +424,42 @@ function renderRail(){
   return `<div class="rail">${ds.map(d=>`
     <div class="seg" style="flex-grow:${per[d].t}" title="${DOMAINS[d]}: ${per[d].a}/${per[d].t}">
       <i style="width:${Math.round(per[d].a/per[d].t*100)}%"></i></div>`).join("")}</div>
-    <div class="railkey"><span>D1</span><span>D7</span></div>`;
+    <div class="railkey"><span>D${ds[0]??""}</span><span>D${ds[ds.length-1]??""}</span></div>`;
+}
+
+/* Palette cell state. In exam mode answered cells stay neutral so the
+   navigator never leaks whether a pick was right before scoring. */
+function palState(id){
+  if(!S.done[id]) return (S.picks[id]||[]).length ? "part" : "open";
+  if(S.mode==="exam") return "ans";
+  return isRight(byId(id), S.picks[id]) ? "ok" : "bad";
+}
+
+function renderPalette(){
+  const f = S.palFilter||"all";
+  const answered = S.order.filter(id=>S.done[id]).length;
+  const flagged = S.order.filter(id=>S.flags&&S.flags[id]).length;
+  const cells = S.order.map((id,ix)=>({id,ix,st:palState(id),fl:!!(S.flags&&S.flags[id])}))
+    .filter(c=> f==="open" ? (c.st==="open"||c.st==="part") : f==="flag" ? c.fl : true);
+  const tabs = [["all","All",S.order.length],["open","Open",S.order.length-answered],["flag","Flagged",flagged]];
+  const body = cells.length
+    ? `<div class="palgrid">${cells.map(c=>
+        `<button class="pq ${c.st}${c.ix===S.i?" cur":""}" data-jump="${c.ix}"
+           title="Question ${c.ix+1}${c.fl?" — flagged":""}">${c.ix+1}${c.fl?'<span class="fl"></span>':""}</button>`
+      ).join("")}</div>`
+    : `<div class="palempty">${f==="open"?"Every question answered.":"Nothing flagged yet — use Flag on a question to mark it."}</div>`;
+  return `<aside class="palette">
+    <div class="palhead"><span class="t">Questions</span><span class="n">${answered}/${S.order.length}</span></div>
+    <div class="palfilters">
+      ${tabs.map(([k,l,n])=>`<button data-filt="${k}" aria-pressed="${f===k}" title="${l}: ${n}">${l}</button>`).join("")}
+    </div>
+    ${body}
+    <div class="pallegend">
+      ${S.mode==="exam"
+        ? `<span><i class="ans"></i>Answered</span><span><i></i>Open</span>`
+        : `<span><i class="ok"></i>Right</span><span><i class="bad"></i>Wrong</span><span><i></i>Open</span>`}
+    </div>
+  </aside>`;
 }
 
 function displayOrder(q, id){
@@ -401,28 +492,49 @@ function renderQuiz(){
   const multi = q.a.length>1;
   const attempted = `${answeredCount()} / ${S.order.length} attempted`;
 
+  const flagged = !!(S.flags && S.flags[id]);
+
   app.innerHTML = `
     ${renderRail()}
-    <div class="card pad">
-      <div class="qmeta">
-        <span class="tag">D${q.d} &middot; ${DOMAINS[q.d]}</span>
-        ${multi?`<span class="tag" style="color:var(--muted);background:var(--surface-2);border-color:var(--line)">Select ${q.a.length}</span>`:""}
-        <span class="qnum">${String(S.i+1).padStart(2,"0")} / ${String(S.order.length).padStart(2,"0")}</span>
+    <div class="quizgrid">
+      ${renderPalette()}
+      <div>
+        <div class="card pad">
+          <div class="qmeta">
+            <span class="tag">D${q.d} &middot; ${DOMAINS[q.d]}</span>
+            ${multi?`<span class="tag" style="color:var(--muted);background:var(--surface-2);border-color:var(--line)">Select ${q.a.length}</span>`:""}
+            <span class="qnum">${String(S.i+1).padStart(2,"0")} / ${String(S.order.length).padStart(2,"0")}</span>
+            <button class="flagbtn" id="flag" aria-pressed="${flagged}"
+              title="Flag this question to come back to it (F)">${flagged?"★ Flagged":"☆ Flag"}</button>
+          </div>
+          <p class="stem">${fmt(q.q)}</p>
+          ${renderOptsHTML(q, id, pick, shown, true)}
+          ${shown?explHTML(q, pick):""}
+        </div>
+        <div class="navbar">
+          <button class="btn ghost" id="prev" ${S.i===0?"disabled":""}>&larr; Back</button>
+          ${shown||S.mode==="exam"
+            ? `<button class="btn" id="next">${S.i===S.order.length-1?"Finish":"Next →"}</button>`
+            : `<button class="btn" id="check" ${pick.length===0?"disabled":""}>Check answer</button>`}
+          <span class="spacer"></span>
+          ${S.mode==="exam"?`<span class="score">${attempted}</span><span class="timer" id="timer"></span>`:
+            `<span class="score">${attempted} &middot; ${scored()} correct</span>`}
+          <button class="btn ghost" id="quit">End &amp; score</button>
+        </div>
       </div>
-      <p class="stem">${fmt(q.q)}</p>
-      ${renderOptsHTML(q, id, pick, shown, true)}
-      ${shown?explHTML(q, pick):""}
-    </div>
-    <div class="navbar">
-      <button class="btn ghost" id="prev" ${S.i===0?"disabled":""}>&larr; Back</button>
-      ${shown||S.mode==="exam"
-        ? `<button class="btn" id="next">${S.i===S.order.length-1?"Finish":"Next →"}</button>`
-        : `<button class="btn" id="check" ${pick.length===0?"disabled":""}>Check answer</button>`}
-      <span class="spacer"></span>
-      ${S.mode==="exam"?`<span class="score">${attempted}</span><span class="timer" id="timer"></span>`:
-        `<span class="score">${attempted} &middot; ${scored()} correct</span>`}
-      <button class="btn ghost" id="quit">End &amp; score</button>
     </div>`;
+
+  app.querySelectorAll(".pq").forEach(b=>b.onclick=()=>{
+    S.i=+b.dataset.jump; save(); renderQuiz(); window.scrollTo({top:0});
+  });
+  app.querySelectorAll(".palfilters button").forEach(b=>b.onclick=()=>{
+    S.palFilter=b.dataset.filt; save(); renderQuiz();
+  });
+  const fb=app.querySelector("#flag"); if(fb) fb.onclick=()=>{
+    if(!S.flags) S.flags={};
+    if(S.flags[id]) delete S.flags[id]; else S.flags[id]=1;
+    save(); renderQuiz();
+  };
 
   app.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{
     const ix=+b.dataset.ix;
@@ -518,6 +630,7 @@ function renderResults(){
   app.querySelector("#again").onclick=()=>{ clearSaved(); S.screen="setup"; render(); };
   const dr=app.querySelector("#drill"); if(dr) dr.onclick=()=>{
     S.order=missed.slice(); S.i=0; S.picks={}; S.done={}; S.screen="quiz"; S.mode="practice"; S.endAt=null;
+    S.flags={}; S.palFilter="all";
     S.optOrder={}; S.order.forEach(id=>{ S.optOrder[id]=shuffledOptOrder(id); });
     save(); render(); window.scrollTo({top:0}); };
   const rv=app.querySelector("#rev"); if(rv) rv.onclick=()=>{
@@ -546,6 +659,7 @@ document.addEventListener("keydown", e=>{
     if(b && !b.disabled){ b.click(); e.preventDefault(); } }
   if(e.key==="ArrowLeft"){ const b=app.querySelector("#prev"); if(b && !b.disabled) b.click(); }
   if(e.key==="ArrowRight"){ const b=app.querySelector("#next"); if(b && !b.disabled) b.click(); }
+  if(e.key==="f"||e.key==="F"){ const b=app.querySelector("#flag"); if(b){ b.click(); e.preventDefault(); } }
 });
 
 render();
